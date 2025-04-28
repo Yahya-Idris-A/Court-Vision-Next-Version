@@ -1,0 +1,67 @@
+/* Navbar.module.css */
+
+.navbar {
+  background-color: #403d91;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: fit-content;
+  width: 100%;
+  padding: 0 100px;
+}
+
+@media (max-width: 640px) {
+  .navbar {
+    padding: 18px 20px;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+}
+
+.linksContainer {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: end;
+  padding: 18px 0;
+  gap: 64px;
+  transition: 0.25s ease-out;
+}
+
+@media (max-width: 640px) {
+  .linksContainer {
+    padding: 0;
+    gap: 40px;
+    flex-direction: column;
+    top: 0;
+    right: -100%;
+    position: fixed;
+    z-index: 10;
+    width: 50%;
+    background-color: #403d91;
+    padding: 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  :global(#sidebar-active:checked) ~ .linksContainer {
+    right: 0;
+  }
+
+  :global(#sidebar-active:checked) ~ .navbar {
+    background-color: #403d91 !important;
+  }
+
+  :global(#sidebar-active:checked) ~ #overlay {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+}
