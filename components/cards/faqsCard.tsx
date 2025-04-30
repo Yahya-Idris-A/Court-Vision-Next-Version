@@ -75,7 +75,7 @@ export default function FaqList() {
                 <div className="flex flex-row w-full items-start px-8 max-sm:px-6 pb-4">
                   {/* Divider Tailwind */}
                   <div className="w-px bg-[#38347A] my-2 mr-4" />
-                  <p className="text-[#667085] font-semibold text-sm max-sm:text-xs">
+                  <p className="text-[#667085] font-semibold text-sm max-sm:text-xs border-l-2 pl-[10px]">
                     {faq.answer}
                   </p>
                 </div>

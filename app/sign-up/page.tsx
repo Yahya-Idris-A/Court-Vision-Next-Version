@@ -4,16 +4,22 @@ import React, { useState } from "react";
 import AuthenticationCard from "@/components/cards/authentication";
 import { Eye, EyeOff } from "lucide-react";
 
-const SignIn: React.FC = () => {
+const SignUp: React.FC = () => {
   const [userData, setUserData] = useState({
+    username: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
+  };
+  const toggleConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,12 +35,22 @@ const SignIn: React.FC = () => {
   return (
     <div className="mx-[5%] md:mx-[30%] my-[16px] md:my-[32px]">
       <AuthenticationCard
-        authType="Sign In"
+        authType="Sign Up"
         formSlot={
           <form
             onSubmit={handleSubmit}
             className="flex flex-col justify-center w-full"
           >
+            <input
+              className="mb-[22px] border border-gray-300 rounded px-3 py-2 text-[14px] text-black"
+              type="username"
+              required
+              placeholder="Username"
+              value={userData.username}
+              onChange={(e) =>
+                setUserData({ ...userData, username: e.target.value })
+              }
+            />
             <input
               className="mb-[22px] border border-gray-300 rounded px-3 py-2 text-[14px] text-black"
               type="email"
@@ -63,6 +79,24 @@ const SignIn: React.FC = () => {
                 {showPassword ? <Eye /> : <EyeOff />}
               </span>
             </div>
+            <div className="relative mb-[22px]">
+              <input
+                className="w-full border border-gray-300 rounded px-3 py-2 text-[14px] text-black"
+                type={showConfirmPassword ? "text" : "password"}
+                required
+                placeholder="Confirm Password"
+                value={userData.confirmPassword}
+                onChange={(e) =>
+                  setUserData({ ...userData, confirmPassword: e.target.value })
+                }
+              />
+              <span
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-sm"
+                onClick={toggleConfirmPassword}
+              >
+                {showConfirmPassword ? <Eye /> : <EyeOff />}
+              </span>
+            </div>
             <label className="flex items-center mb-[22px] text-[14px] font-semibold text-[#667085]">
               <input type="checkbox" className="mr-2" />
               Remember me
@@ -80,17 +114,21 @@ const SignIn: React.FC = () => {
                 "Sign In"
               )}
             </button>
+            <p className="text-[#4B465C] text-[15px] text-center leading-[20px] my-[32px]">
+              By clicking the Sign Up button you agree to our Term and Condition
+              and Privacy Policy
+            </p>
           </form>
         }
         authChoiceSlot={
           <div className="flex flex-col w-full items-center mt-[32px]">
             <span className="text-black text-[15px] font-normal text-center">
-              Don't have an account?{" "}
+              Already have an account?{" "}
               <a
-                href="/sign-up"
+                href="/sign-in"
                 className="text-[#403D91] hover:underline ml-1"
               >
-                Sign Up
+                Sign In
               </a>
             </span>
           </div>
@@ -100,4 +138,4 @@ const SignIn: React.FC = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;
