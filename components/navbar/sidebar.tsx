@@ -6,7 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   UserCircle,
-  ClipboardEdit,
+  Upload,
   ClipboardCheck,
   LogOut,
 } from "lucide-react";
@@ -53,7 +53,7 @@ export default function sidebar() {
   };
   return (
     <div
-      className={`border-r bg-white stroke-[#667085] shadow transition-all duration-300 ease-in-out transform hidden sm:flex h-screen ${
+      className={`border-r bg-white stroke-[#667085] shadow transition-all duration-300 ease-in-out transform hidden sm:flex h-[100dvh] sticky top-0 z-50 ${
         isSidebarExpanded ? "w-[400px]" : "w-[125px]"
       }`}
     >
@@ -80,7 +80,7 @@ export default function sidebar() {
               </Link>
 
               <Link href="/upload" className={linkClasses("/upload")}>
-                <ClipboardEdit className={iconClasses("/upload")} />
+                <Upload className={iconClasses("/upload")} />
                 <h2 className={textClasses("/upload")}>Upload</h2>
               </Link>
 
@@ -122,7 +122,7 @@ export default function sidebar() {
       <div className="relative">
         <button
           type="button"
-          className="absolute top-[0px] right-[-25px] flex h-[40px] w-[40px] items-center justify-center rounded-r-2xl bg-white stroke-[#667085] text-black hover:shadow-lg transition-shadow duration-300 ease-in-out"
+          className="absolute top-[0px] right-[-25px] flex h-[40px] w-[40px] items-center justify-center rounded-r-2xl bg-white stroke-[#667085] text-black  transition-shadow duration-300 ease-in-out cursor-pointer"
           onClick={toggleSidebar}
         >
           {isSidebarExpanded ? (

@@ -27,3 +27,50 @@ body {
   grid-template-rows: auto 1fr auto;
   grid-template-columns: minmax(0, 1fr);
 }
+
+/* Form */
+.react-datepicker-wrapper {
+  width: 100% !important;
+}
+
+input:focus + .placeholder {
+  top: -3px;
+  background-color: #fff;
+  color: #fd6a2a;
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid #fd6a2a;
+}
+
+/* Animasi Progress Bar */
+@keyframes indeterminate {
+  0% {
+    left: -33%;
+    width: 33%;
+  }
+  50% {
+    left: 33%;
+    width: 33%;
+  }
+  100% {
+    left: 100%;
+    width: 33%;
+  }
+}
+
+.animate-pulse-indeterminate {
+  animation: indeterminate 1.2s infinite ease-in-out;
+}
+
+/* Shoot Map */
+.shot {
+  position: absolute;
+  background-color: rgba(255, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
