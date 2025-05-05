@@ -1,58 +1,231 @@
 "use client";
+// import dependency
 import React, { useEffect, useState, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Pencil, Calendar, Map, Video, CloudUpload } from "lucide-react";
 import classNames from "classnames";
+import Uppy from "@uppy/core";
+import type { UppyFile as GenericUppyFile } from "@uppy/core";
+import AwsS3 from "@uppy/aws-s3";
+import DropTarget from "@uppy/drop-target";
+import * as uploadService from "@/services/uploadServices";
+
+type UppyFile = GenericUppyFile<
+  Record<string, unknown>,
+  Record<string, unknown>
+>;
 
 const page = () => {
   const [matchTitle, setMatchTitle] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const [matchVenue, setmatchVenue] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  interface FileInfo {
+    id: string;
+    name: string;
+    size: number;
+    type: string;
+  }
+  const selectedFileRef = useRef<FileInfo | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const uppyRef = useRef<Uppy | null>(null);
 
+  // Untuk input file
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
 
+  // Handle kalau input file manual
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
-      simulateUpload();
+      selectedFileRef.current = {
+        id: crypto.randomUUID(),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      };
+      uppyRef.current?.addFile({
+        source: "file input",
+        name: file.name,
+        type: file.type,
+        data: file,
+      });
     }
   };
 
-  const simulateUpload = () => {
-    setIsUploading(true);
-    setUploadProgress(0);
-    setUploadSuccess(false);
-
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          setUploadSuccess(true);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
-  };
-
+  // Fungsi buat upload data analisis
   const startAnalysis = () => {
     if (uploadSuccess) {
-      console.log("Starting analysis for:", selectedFile?.name);
+      console.log("Starting analysis for:", selectedFileRef.current?.name);
     }
   };
 
+  // Logic upload video
   useEffect(() => {
+    // Set header untuk upload video biar tidak error, kalau di set di awal nanti server tidak bisa membaca token
+    uploadService.setHeaders();
+
+    // Inisiasi Uppy
+    const uppyInstance = new Uppy({
+      id: "basketballUploader",
+      autoProceed: true,
+      restrictions: {
+        maxFileSize: 1000000000, // 1GB
+        allowedFileTypes: [".mp4", ".mov", ".avi", ".mkv"],
+        maxNumberOfFiles: 1,
+      },
+    });
+
+    // Set Uppy biar bisa dipakai kalau input file manual tanpa drag and drop
+    uppyRef.current = uppyInstance;
+
+    // Logic upload makai AWS S3
+    uppyInstance.use(AwsS3, {
+      async getUploadParameters(file, options) {
+        const result = await uploadService.getSignedUrl(
+          file.name ?? "",
+          file.type,
+          options.signal
+        );
+        const { method, url } = result.data;
+        return {
+          method,
+          url,
+          fields: {},
+          headers: {
+            "Content-Type": file.type,
+          },
+        };
+      },
+
+      async createMultipartUpload(file) {
+        const metadata: Record<string, string> = {};
+        Object.keys(file.meta || {}).forEach((key) => {
+          if (file.meta[key] != null) {
+            metadata[key] = file.meta[key].toString();
+          }
+        });
+        try {
+          return await uploadService.createMultipartUpload(
+            file.name ?? "",
+            file.type,
+            metadata
+          );
+        } catch (error) {
+          console.error("Error creating multipart upload:", error);
+          throw new Error("Failed to create multipart upload");
+        }
+      },
+      async signPart(_file, options) {
+        const { uploadId, key, partNumber, signal } = options;
+        signal?.throwIfAborted();
+        if (uploadId == null || key == null || partNumber == null) {
+          throw new Error(
+            "Cannot sign without a key, an uploadId, and a partNumber"
+          );
+        }
+        try {
+          return await uploadService.signPart(
+            uploadId!,
+            key,
+            partNumber,
+            signal
+          );
+        } catch (error) {
+          console.error("Error signing part:", error);
+          throw new Error("Failed to sign part");
+        }
+      },
+      async listParts(_file, options) {
+        const { uploadId, key, signal } = options;
+        signal?.throwIfAborted();
+        try {
+          return await uploadService.listParts(uploadId!, key, signal);
+        } catch (error) {
+          console.error("Error listing parts:", error);
+          throw new Error("Failed to list parts");
+        }
+      },
+      async completeMultipartUpload(_file, options) {
+        const { uploadId, key, signal, parts } = options;
+        signal?.throwIfAborted();
+        try {
+          return await uploadService.completeMultipartUpload(
+            uploadId!,
+            key,
+            parts,
+            signal
+          );
+        } catch (error) {
+          console.error("Error completing multipart upload:", error);
+          throw new Error("Failed to complete multipart upload");
+        }
+      },
+      async abortMultipartUpload(_file, options) {
+        const { uploadId, key, signal } = options;
+        try {
+          return await uploadService.abortMultipartUpload(
+            uploadId!,
+            key,
+            signal
+          );
+        } catch (error) {
+          console.error("Error aborting multipart upload:", error);
+          throw new Error("Failed to abort multipart upload");
+        }
+      },
+    });
+
+    // Dropzone support
+    uppyInstance.use(DropTarget, {
+      target: "#uppy-dashboard",
+    });
+
+    // Uppy events saat file ditambahkan
+    uppyInstance.on("file-added", (file: UppyFile) => {
+      if (file && file.id && file.name && file.size && file.type) {
+        selectedFileRef.current = {
+          id: file.id,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        };
+        setUploadProgress(0);
+      }
+    });
+
+    // Uppy events saat upload sedang berprogress
+    uppyInstance.on("upload-progress", (file, progress) => {
+      if (selectedFileRef && file && selectedFileRef.current?.id === file.id) {
+        setIsUploading(true);
+        if (progress.bytesTotal !== null) {
+          setUploadProgress(
+            Math.floor((progress.bytesUploaded / progress.bytesTotal) * 100)
+          );
+        }
+      }
+    });
+
+    // Uppy events saat upload video telah suskses
+    uppyInstance.on("upload-success", (file, response) => {
+      setIsUploading(false);
+      setUploadSuccess(true);
+      setUploadProgress(100);
+      console.log("Upload successful to:", response.uploadURL);
+    });
+
+    // Uppy events saat upload video error
+    uppyInstance.on("upload-error", (file, error) => {
+      setIsUploading(false);
+      console.error("Upload failed:", error);
+    });
+
+    // Logic drag and drop file
     const dropZone = document.querySelector(".drop-zone");
 
     const handleDragOver = (e: DragEvent) => {
@@ -70,11 +243,22 @@ const page = () => {
       setIsDragging(false);
       if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
         const file = e.dataTransfer.files[0];
-        setSelectedFile(file);
-        simulateUpload();
+        selectedFileRef.current = {
+          id: crypto.randomUUID(),
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        };
+        uppyInstance.addFile({
+          source: "file input",
+          name: file.name,
+          type: file.type,
+          data: file,
+        });
         e.dataTransfer.clearData();
       }
     };
+    // uppyInstance.cancelAll();
 
     if (dropZone) {
       dropZone.addEventListener("dragover", handleDragOver as EventListener);
@@ -191,16 +375,22 @@ const page = () => {
             accept="video/*"
             className="hidden"
           />
+          {/* Hidden Uppy Dashboard (used for file picking but not displayed) */}
+          <div id="uppy-dashboard" className="hidden"></div>
 
           {/* Upload progress */}
-          {selectedFile && (
+          {selectedFileRef.current && (
             <div className="px-[8px] py-[12px] mb-[15px]">
               <div className="flex flex-row items-center mb-[6px]">
                 <div className="mr-[10px]">
                   <Video className="text-[#FD6A2A] w-[40px] h-[40px] max-sm:w-[30px] max-sm:h-[30px]" />
                 </div>
-                <span className="grow truncate">{selectedFile.name}</span>
-                <span className="ml-[10px] text-[14px]">{uploadProgress}%</span>
+                <span className="grow truncate text-black">
+                  {selectedFileRef.current?.name}
+                </span>
+                <span className="ml-[10px] text-[14px] text-black">
+                  {uploadProgress}%
+                </span>
               </div>
               <div className="overflow-hidden rounded-[10px] border border-[#403D91] h-[10px]">
                 <div

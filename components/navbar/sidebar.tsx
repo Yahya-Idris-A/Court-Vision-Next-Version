@@ -21,14 +21,14 @@ export default function sidebar() {
   const pathname = usePathname();
 
   const logout = () => {
-    // Implementasi logout
-    console.log("Logout...");
+    localStorage.clear();
+    window.location.href = "/home";
   };
 
   const linkClasses = (routeMatch: string | string[]) => {
     const isActive = Array.isArray(routeMatch)
-      ? routeMatch.some((r) => pathname.includes(r))
-      : pathname.includes(routeMatch);
+      ? routeMatch.some((r) => pathname?.includes(r))
+      : pathname?.includes(routeMatch);
     return `flex flex-row justify-start items-center w-full max-sm:w-fit px-[16px] max-sm:px-[10px] rounded-[6px] py-[8px] cursor-pointer overflow-x-hidden ${
       isActive ? "bg-[#FD6A2A]" : "bg-white"
     }`;
@@ -36,8 +36,8 @@ export default function sidebar() {
 
   const iconClasses = (routeMatch: string | string[]) => {
     const isActive = Array.isArray(routeMatch)
-      ? routeMatch.some((r) => pathname.includes(r))
-      : pathname.includes(routeMatch);
+      ? routeMatch.some((r) => pathname?.includes(r))
+      : pathname?.includes(routeMatch);
     return `w-10 h-10 max-sm:w-5 max-sm:h-5 overflow-visible ${
       isActive ? "text-white" : "text-[#4B465C]"
     }`;
@@ -45,8 +45,8 @@ export default function sidebar() {
 
   const textClasses = (routeMatch: string | string[]) => {
     const isActive = Array.isArray(routeMatch)
-      ? routeMatch.some((r) => pathname.includes(r))
-      : pathname.includes(routeMatch);
+      ? routeMatch.some((r) => pathname?.includes(r))
+      : pathname?.includes(routeMatch);
     return `text-[20px] font-normal ml-[8px] max-sm:hidden transition-all duration-300 ease-in-out transform ${
       isActive ? "text-white" : "text-[#4B465C]"
     } ${isSidebarExpanded ? "opacity-100" : "opacity-0"}`;

@@ -9,10 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@uppy/aws-s3": "^4.2.3",
     "@uppy/core": "^4.4.4",
     "@uppy/dashboard": "^4.3.3",
+    "@uppy/drop-target": "^3.1.1",
     "@uppy/react": "^4.2.3",
+    "axios": "^1.9.0",
     "framer-motion": "^12.9.2",
+    "http-proxy": "^1.18.1",
     "lucide-react": "^0.503.0",
     "next": "15.3.1",
     "react": "^19.0.0",
@@ -22,6 +26,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/http-proxy": "^1.17.16",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

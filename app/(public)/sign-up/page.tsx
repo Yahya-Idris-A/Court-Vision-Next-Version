@@ -3,14 +3,15 @@
 import React, { useState } from "react";
 import AuthenticationCard from "@/components/cards/authentication";
 import { Eye, EyeOff } from "lucide-react";
+import * as authService from "@/services/authServices";
 
 const SignUp: React.FC = () => {
   const [userData, setUserData] = useState({
-    username: "",
+    name: "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,14 +23,28 @@ const SignUp: React.FC = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulasi loading
-    setTimeout(() => {
+    if (userData.password !== confirmPassword) {
+      alert("Password tidak cocok!");
       setIsLoading(false);
-      console.log("Submitted:", userData);
-    }, 1500);
+      return;
+    } else {
+      try {
+        const response = await authService.signup(userData);
+        console.log("Login Success:", response);
+
+        localStorage.setItem("token", response.data.token);
+        console.log("Token:", response.data.token);
+        window.location.href = "/user";
+      } catch (error: any) {
+        console.error("Login failed:", error);
+        alert("Login gagal. Cek email atau password!");
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
   return (
@@ -46,9 +61,9 @@ const SignUp: React.FC = () => {
               type="username"
               required
               placeholder="Username"
-              value={userData.username}
+              value={userData.name}
               onChange={(e) =>
-                setUserData({ ...userData, username: e.target.value })
+                setUserData({ ...userData, name: e.target.value })
               }
             />
             <input
@@ -85,10 +100,8 @@ const SignUp: React.FC = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 required
                 placeholder="Confirm Password"
-                value={userData.confirmPassword}
-                onChange={(e) =>
-                  setUserData({ ...userData, confirmPassword: e.target.value })
-                }
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
               <span
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-sm"

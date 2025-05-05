@@ -8,20 +8,13 @@ import { Dashboard } from "@uppy/react";
 import "@uppy/core/dist/style.min.css";
 import "@uppy/dashboard/dist/style.min.css";
 import { ImagePlus, User, Mail, Phone, Calendar, Save } from "lucide-react";
+import * as authService from "@/services/authServices";
 
-const CustomInput = React.forwardRef<HTMLInputElement, any>(
-  ({ value, onClick, onChange }, ref) => (
-    <input
-      type="text"
-      onClick={onClick}
-      onChange={onChange}
-      value={value}
-      ref={ref}
-      placeholder="Date of Birth"
-      className="w-full border border-gray-300 rounded px-10 py-2 text-[14px] text-black"
-    />
-  )
-);
+interface UserData {
+  id: number;
+  name: string;
+  email: string;
+}
 
 const page = () => {
   const [uppy] = useState(
@@ -34,27 +27,25 @@ const page = () => {
         autoProceed: true,
       })
   );
-  const [focused, setFocused] = useState(false);
-  const [value, setValue] = useState("");
 
   const [selectedImage, setSelectedImage] = useState("/user/Avatar.png");
   const [selectedImageName, setSelectedImageName] = useState("");
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
 
-  // useEffect(() => {
-  //   uppy.on("complete", (result) => {
-  //     if (result.successful.length > 0) {
-  //       const file = result.successful[0];
-  //       setSelectedImage(URL.createObjectURL(file.data));
-  //       setSelectedImageName(file.name);
-  //     }
-  //   });
+  const getUserData = async () => {
+    const data = await authService.getUser();
+    setUserData(data);
+    setUserName(data?.name || "");
+    setUserEmail(data?.email || "");
+  };
 
-  //   return;
-  // }, [uppy]);
+  useEffect(() => {
+    getUserData();
+  }, []);
 
   const handleSave = () => {
     // Implementasi logika penyimpanan data

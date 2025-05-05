@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import AuthenticationCard from "@/components/cards/authentication";
 import { Eye, EyeOff } from "lucide-react";
+import * as authService from "@/services/authServices";
 
 const SignIn: React.FC = () => {
   const [userData, setUserData] = useState({
@@ -16,14 +17,22 @@ const SignIn: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulasi loading
-    setTimeout(() => {
+    try {
+      const response = await authService.signin(userData);
+      console.log("Login Success:", response);
+
+      localStorage.setItem("token", response.data.token);
+      console.log("Token:", response.data.token);
+      window.location.href = "/user";
+    } catch (error: any) {
+      console.error("Login failed:", error);
+      alert("Login gagal. Cek email atau password!");
+    } finally {
       setIsLoading(false);
-      console.log("Submitted:", userData);
-    }, 1500);
+    }
   };
 
   return (
