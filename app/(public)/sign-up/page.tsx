@@ -33,14 +33,14 @@ const SignUp: React.FC = () => {
     } else {
       try {
         const response = await authService.signup(userData);
-        console.log("Login Success:", response);
+        console.log("Sign Up Success:", response);
 
         localStorage.setItem("token", response.data.token);
         console.log("Token:", response.data.token);
         window.location.href = "/user";
       } catch (error: any) {
-        console.error("Login failed:", error);
-        alert("Login gagal. Cek email atau password!");
+        console.error("Sign Up failed:", error);
+        alert("Sign Up gagal. Cek email atau password!");
       } finally {
         setIsLoading(false);
       }
