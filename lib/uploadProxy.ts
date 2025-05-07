@@ -5,9 +5,9 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
-const baseURL = process.env.SECRET_API_BASE_URL;
+const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
-const axiosUpload = axios.create({ baseURL });
+const axiosUpload = axios.create();
 
 // Handler request
 const requestHandler = (
