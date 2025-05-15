@@ -18,7 +18,7 @@ export default async function handler(
 
   try {
     const backendRes = await axios.get(
-      `${process.env.SECRET_API_BASE_URL}/api/profile`,
+      `${process.env.SECRET_API_BASE_URL}/api/users/profile`,
       {
         headers: {
           Authorization: authHeader,

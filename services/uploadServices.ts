@@ -13,7 +13,7 @@ export async function getSignedUrl(
   signal?: AbortSignal
 ) {
   const res = await axiosUpload.post(
-    "/api/s3/sign",
+    "/api/s3/upload/presign",
     { filename, contentType },
     { signal }
   );
@@ -25,7 +25,7 @@ export async function createMultipartUpload(
   contentType: string,
   metadata: any
 ) {
-  const res = await axiosUpload.post("/api/s3/multipart", {
+  const res = await axiosUpload.post("/api/s3/upload/multipart", {
     filename,
     contentType,
     metadata,
@@ -41,7 +41,7 @@ export async function signPart(
 ) {
   const filename = encodeURIComponent(key);
   const res = await axiosUpload.get(
-    `/api/s3/multipart/${uploadId}/${partNumber}?key=${filename}`,
+    `/api/s3/upload/multipart/${uploadId}/${partNumber}?key=${filename}`,
     {
       signal,
     }
@@ -56,7 +56,7 @@ export async function listParts(
 ) {
   const filename = encodeURIComponent(key);
   const res = await axiosUpload.get(
-    `/api/s3/multipart/${uploadId}?key=${filename}`,
+    `/api/s3/upload/multipart/${uploadId}?key=${filename}`,
     {
       signal,
     }
@@ -73,7 +73,7 @@ export async function completeMultipartUpload(
   const filename = encodeURIComponent(key);
   const uploadIdEnc = encodeURIComponent(uploadId);
   const res = await axiosUpload.post(
-    `/api/s3/multipart/${uploadIdEnc}/complete?key=${filename}`,
+    `/api/s3/upload/multipart/${uploadIdEnc}/complete?key=${filename}`,
     { parts },
     { signal }
   );
@@ -88,10 +88,25 @@ export async function abortMultipartUpload(
   const filename = encodeURIComponent(key);
   const uploadIdEnc = encodeURIComponent(uploadId);
   const res = await axiosUpload.delete(
-    `/api/s3/multipart/${uploadIdEnc}?key=${filename}`,
+    `/api/s3/upload/multipart/${uploadIdEnc}?key=${filename}`,
     {
       signal,
     }
   );
   return res.data;
+}
+
+export async function uploadAllData(
+  title: string,
+  date: string,
+  venue: string,
+  video_url: string
+) {
+  const res = await axiosUpload.post("/api/videos", {
+    title,
+    date,
+    venue,
+    video_url,
+  });
+  return res;
 }

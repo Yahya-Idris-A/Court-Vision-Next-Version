@@ -5,26 +5,7 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
-const axiosIns = axios.create({
-  baseURL: "",
-});
-
-// Menambahkan token Authorization ke setiap request
-axiosIns.interceptors.request.use(
-  (config) => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("token")?.replace(/['"]+/g, "");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
-
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+const axiosAnalyze = axios.create();
 
 // Handler request
 const requestHandler = (
@@ -64,8 +45,7 @@ const errorHandler = (error: AxiosError): Promise<never> => {
   }
 };
 
-// Pasang interceptor
-axiosIns.interceptors.request.use(requestHandler, errorHandler);
-axiosIns.interceptors.response.use(responseHandler, errorHandler);
+axiosAnalyze.interceptors.request.use(requestHandler, errorHandler);
+axiosAnalyze.interceptors.response.use(responseHandler, errorHandler);
 
-export default axiosIns;
+export default axiosAnalyze;

@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   try {
     const response = await axios.post(
-      `${process.env.SECRET_API_BASE_URL}/api/signup`,
+      `${process.env.SECRET_API_BASE_URL}/api/auth/login`,
       req.body
     );
 

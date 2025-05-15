@@ -1,9 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import React from "react";
 import ListVideoCards from "@/components/cards/listVideoCards";
 import Pagination from "@/components/partials/pagination";
+import * as analyzeService from "@/services/analyzeService";
+
+interface VideoData {
+  id: string;
+  thumbnail: string;
+  title: string;
+  date: string;
+  uploadProgress: number | null;
+  detailAnalysisUrl: string;
+}
 
 const sampleData = [
   {
@@ -186,12 +196,83 @@ const sampleData = [
 const itemsPerPage = 3;
 
 const page = () => {
+  const [videos, setVideos] = useState<VideoData[]>([]);
+  const videosRef = useRef(videos);
   const [currentPage, setCurrentPage] = useState(1);
+
   const totalItems = sampleData.length;
   const currentData = sampleData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  const getAllVideos = async () => {
+    const rawData = await analyzeService.getAllVideos();
+
+    const formattedData: VideoData[] = rawData.map((item: any) => ({
+      id: item.id,
+      thumbnail: "/thumb/thumbnail.jpg", // default
+      title: item.title,
+      date: new Date(item.date).toISOString().split("T")[0] ?? "",
+      uploadProgress: null, // initial value
+      detailAnalysisUrl: `/detail-analyze/${item.id}`,
+    }));
+
+    setVideos(formattedData);
+  };
+
+  const pollAllProgress = async () => {
+    try {
+      const data = await analyzeService.getAllVideoProgress();
+      console.log(data);
+
+      setVideos((prevVideos) =>
+        prevVideos.map((video) => {
+          const updated = data.find((v: any) => v.id === video.id);
+          return updated
+            ? { ...video, uploadProgress: updated.uploadProgress }
+            : video;
+        })
+      );
+    } catch (err) {
+      console.error("Polling error", err);
+    }
+  };
+
+  useEffect(() => {
+    getAllVideos();
+  }, []);
+
+  useEffect(() => {
+    videosRef.current = videos;
+  }, [videos]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const unFinished = videosRef.current.filter(
+        (v: any) => v.uploadProgress < 100
+      );
+      const unStarted = videosRef.current.filter(
+        (v: any) => v.uploadProgress == null
+      );
+      console.log(videosRef);
+
+      console.log("unfisih: ", unFinished);
+      console.log("unstart: ", unStarted);
+
+      if (unStarted.length !== 0) {
+        pollAllProgress();
+        console.log("polll 1");
+      } else if (unFinished.length !== 0) {
+        pollAllProgress();
+        console.log("polll 2");
+      }
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] mr-[20px] max-sm:mt-[16px]">
@@ -201,6 +282,21 @@ const page = () => {
           List of Videos
         </p>
       </div>
+
+      <div className="flex flex-col items-center justify-start w-full gap-[16px]">
+        {/* Video Cards */}
+        {videos.map((item, index) => (
+          <ListVideoCards
+            key={index}
+            thumbnail={item.thumbnail}
+            title={item.title}
+            date={item.date}
+            uploadProgress={item.uploadProgress}
+            detailAnalysisUrl={item.detailAnalysisUrl}
+          />
+        ))}
+      </div>
+
       {/* List of Videos */}
       <div className="flex flex-col items-center justify-start w-full gap-[16px]">
         {/* Video Cards */}

@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   const { slug } = req.query;
   const path = slug instanceof Array ? slug.join("/") : slug;
-  const url = `${process.env.SECRET_API_BASE_URL}/api/s3/${path}`;
+  const url = `${process.env.SECRET_API_BASE_URL}/api/s3/upload/${path}`;
   console.log("Proxy URL ", url);
   console.log("Req Query ", req.query);
 

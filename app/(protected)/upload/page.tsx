@@ -17,9 +17,10 @@ type UppyFile = GenericUppyFile<
 >;
 
 const page = () => {
-  const [matchTitle, setMatchTitle] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
-  const [matchVenue, setmatchVenue] = useState("");
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState<Date | null>(null);
+  const [venue, setVenue] = useState("");
+  const [video_url, setvideo_url] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   interface FileInfo {
     id: string;
@@ -62,6 +63,18 @@ const page = () => {
   const startAnalysis = () => {
     if (uploadSuccess) {
       console.log("Starting analysis for:", selectedFileRef.current?.name);
+      console.log("Title:", title);
+      console.log("Venue:", venue);
+      console.log("Date:", date);
+      console.log("URL:", video_url);
+      const dateUp = date?.toISOString().split("T")[0] ?? "";
+      try {
+        uploadService.uploadAllData(title, dateUp, venue, video_url);
+        console.log("Sukses");
+      } catch (error) {
+        console.log("Gagal upload");
+        console.error(error);
+      }
     }
   };
 
@@ -216,6 +229,7 @@ const page = () => {
       setIsUploading(false);
       setUploadSuccess(true);
       setUploadProgress(100);
+      setvideo_url(response.uploadURL || "");
       console.log("Upload successful to:", response.uploadURL);
     });
 
@@ -297,12 +311,12 @@ const page = () => {
             <input
               type="text"
               className="w-full border border-gray-300 rounded px-3 py-2 text-[14px] text-black pl-8"
-              value={matchTitle}
-              onChange={(e) => setMatchTitle(e.target.value)}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
             />
             <label
               className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-gray-400 transition-transform duration-300 ease-in-out 
-                  ${matchTitle ? "top-[-3px] bg-white" : ""}`}
+                  ${title ? "top-[-3px] bg-white" : ""}`}
             >
               Match Title
             </label>
@@ -312,14 +326,14 @@ const page = () => {
             <div className="flex items-center rounded py-2 w-full relative">
               <Calendar className="text-gray-400 mr-2 absolute ml-1" />
               <DatePicker
-                selected={dateOfBirth}
-                onChange={(date: Date | null) => setDateOfBirth(date)}
+                selected={date}
+                onChange={(date: Date | null) => setDate(date)}
                 className="w-full border border-gray-300 rounded px-10 py-2 text-[14px] text-black"
                 placeholderText="Match Date"
               />
               <label
                 className={
-                  dateOfBirth
+                  date
                     ? "top-[-3px] bg-white text-gray-400 absolute left-[40px] text-[14px] px-[5px] pointer-events-none"
                     : "hidden"
                 }
@@ -333,12 +347,12 @@ const page = () => {
                 <input
                   type="tel"
                   className="w-full border border-gray-300 rounded py-2 text-[14px] text-black pl-8"
-                  value={matchVenue}
-                  onChange={(e) => setmatchVenue(e.target.value)}
+                  value={venue}
+                  onChange={(e) => setVenue(e.target.value)}
                 />
                 <label
                   className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-gray-400 transition-transform duration-300 ease-in-out 
-                  ${matchVenue ? "top-[-3px] bg-white" : ""}`}
+                  ${venue ? "top-[-3px] bg-white" : ""}`}
                 >
                   Match Venue
                 </label>
