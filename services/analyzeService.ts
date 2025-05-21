@@ -7,6 +7,10 @@ export const setHeaders = () => {
   }`;
 };
 
+export const getToken = () => {
+  return localStorage.getItem("token")?.replace(/['"]+/g, "") || "";
+};
+
 export const endPointUploadProgress =
   process.env.NEXT_PUBLIC_API_URL + "/api/videos/progress";
 

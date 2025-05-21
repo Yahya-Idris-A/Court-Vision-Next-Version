@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 
 import React from "react";
+import * as ExtendedEventSource from "extended-eventsource";
 import ListVideoCards from "@/components/cards/listVideoCards";
 import Pagination from "@/components/partials/pagination";
 import * as analyzeService from "@/services/analyzeService";
@@ -12,6 +13,7 @@ interface VideoData {
   title: string;
   date: string;
   uploadProgress: number | null;
+  uploadStatus: string;
   detailAnalysisUrl: string;
 }
 
@@ -21,6 +23,7 @@ const sampleData = [
     title: "Basket Match Day 1",
     date: "2024-08-20",
     uploadProgress: null,
+    uploadStatus: "waiting",
     detailAnalysisUrl: "/detail-analyze/1",
   },
   {
@@ -28,6 +31,7 @@ const sampleData = [
     title: "Basket Match Day 2",
     date: "2024-08-20",
     uploadProgress: 80,
+    uploadStatus: "processing",
     detailAnalysisUrl: "/detail-analyze/2",
   },
   {
@@ -35,6 +39,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/3",
   },
   {
@@ -42,6 +47,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/4",
   },
   {
@@ -49,6 +55,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/5",
   },
   {
@@ -56,6 +63,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/6",
   },
   {
@@ -63,6 +71,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/7",
   },
   {
@@ -70,6 +79,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/8",
   },
   {
@@ -77,6 +87,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/9",
   },
   {
@@ -84,6 +95,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/10",
   },
   {
@@ -91,6 +103,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/11",
   },
   {
@@ -98,6 +111,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/12",
   },
   {
@@ -105,6 +119,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/13",
   },
   {
@@ -112,6 +127,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/14",
   },
   {
@@ -119,6 +135,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/15",
   },
   {
@@ -126,6 +143,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/14",
   },
   {
@@ -133,6 +151,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/15",
   },
   {
@@ -140,6 +159,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/14",
   },
   {
@@ -147,6 +167,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/15",
   },
   {
@@ -154,6 +175,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/14",
   },
   {
@@ -161,6 +183,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/15",
   },
   {
@@ -168,6 +191,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/14",
   },
   {
@@ -175,6 +199,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/15",
   },
   {
@@ -182,6 +207,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/14",
   },
   {
@@ -189,6 +215,7 @@ const sampleData = [
     title: "Basket Match Day 3",
     date: "2024-08-21",
     uploadProgress: 100,
+    uploadStatus: "completed",
     detailAnalysisUrl: "/detail-analyze/15",
   },
 ];
@@ -215,28 +242,11 @@ const page = () => {
       title: item.title,
       date: new Date(item.date).toISOString().split("T")[0] ?? "",
       uploadProgress: null, // initial value
+      uploadStatus: item.status, // default
       detailAnalysisUrl: `/detail-analyze/${item.id}`,
     }));
 
     setVideos(formattedData);
-  };
-
-  const pollAllProgress = async () => {
-    try {
-      const data = await analyzeService.getAllVideoProgress();
-      console.log(data);
-
-      setVideos((prevVideos) =>
-        prevVideos.map((video) => {
-          const updated = data.find((v: any) => v.id === video.id);
-          return updated
-            ? { ...video, uploadProgress: updated.uploadProgress }
-            : video;
-        })
-      );
-    } catch (err) {
-      console.error("Polling error", err);
-    }
   };
 
   useEffect(() => {
@@ -248,29 +258,37 @@ const page = () => {
   }, [videos]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const unFinished = videosRef.current.filter(
-        (v: any) => v.uploadProgress < 100
-      );
-      const unStarted = videosRef.current.filter(
-        (v: any) => v.uploadProgress == null
-      );
-      console.log(videosRef);
+    const token = analyzeService.getToken();
 
-      console.log("unfisih: ", unFinished);
-      console.log("unstart: ", unStarted);
-
-      if (unStarted.length !== 0) {
-        pollAllProgress();
-        console.log("polll 1");
-      } else if (unFinished.length !== 0) {
-        pollAllProgress();
-        console.log("polll 2");
+    const eventSource = new ExtendedEventSource.EventSource(
+      analyzeService.endPointUploadProgress,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    }, 5000);
+    );
 
-    return () => {
-      clearInterval(interval);
+    eventSource.onmessage = (event: MessageEvent) => {
+      if (event.data) {
+        const data = JSON.parse(event?.data);
+
+        const updatedVideos = videosRef.current.map((video) =>
+          video.id === data.video.id
+            ? {
+                ...video,
+                uploadProgress: data.video.progress,
+                uploadStatus: data.video.status,
+              }
+            : video
+        );
+
+        setVideos(updatedVideos);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("Error occurred:", error);
     };
   }, []);
 
@@ -292,6 +310,7 @@ const page = () => {
             title={item.title}
             date={item.date}
             uploadProgress={item.uploadProgress}
+            uploadStatus={item.uploadStatus}
             detailAnalysisUrl={item.detailAnalysisUrl}
           />
         ))}
@@ -307,6 +326,7 @@ const page = () => {
             title={item.title}
             date={item.date}
             uploadProgress={item.uploadProgress}
+            uploadStatus={item.uploadStatus}
             detailAnalysisUrl={item.detailAnalysisUrl}
           />
         ))}

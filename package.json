@@ -15,6 +15,7 @@
     "@uppy/drop-target": "^3.1.1",
     "@uppy/react": "^4.2.3",
     "axios": "^1.9.0",
+    "extended-eventsource": "^1.4.5",
     "framer-motion": "^12.9.2",
     "http-proxy": "^1.18.1",
     "lucide-react": "^0.503.0",

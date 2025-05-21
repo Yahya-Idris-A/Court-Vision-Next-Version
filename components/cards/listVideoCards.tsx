@@ -10,6 +10,7 @@ interface AnalysisCardProps {
   title: string;
   date: string;
   uploadProgress: number | null;
+  uploadStatus: string;
   detailAnalysisUrl: string;
 }
 
@@ -18,6 +19,7 @@ export default function AnalysisCard({
   title,
   date,
   uploadProgress,
+  uploadStatus,
   detailAnalysisUrl,
 }: AnalysisCardProps) {
   const [loadingStep, setLoadingStep] = useState(0);
@@ -51,32 +53,58 @@ export default function AnalysisCard({
               <h2 className="text-black text-[20px] font-semibold">{title}</h2>
               <p className="text-[15px] text-[#ADADAD] font-semibold">{date}</p>
             </div>
-            {uploadProgress !== null ? (
+            {uploadStatus === "waiting" && (
+              <p className="text-[15px] text-black font-semibold">0%</p>
+            )}
+            {uploadStatus === "processing" && (
               <p className="text-[15px] text-black font-semibold">
                 {uploadProgress}%
               </p>
-            ) : (
+            )}
+            {uploadStatus === "completed" && (
+              <p className="text-[15px] text-black font-semibold">100%</p>
+            )}
+            {uploadStatus === "failed" && (
               <p className="text-[15px] text-black font-semibold">0%</p>
             )}
           </div>
           {/* Progress Bar */}
-          {uploadProgress !== null ? (
+          {uploadStatus === "waiting" ? (
+            // Indeterminate progress bar (animated)
+            <div className="overflow-hidden rounded-[10px] border-[1px] border-[#403D91] h-[20px] relative bg-white">
+              <div className="absolute top-0 left-0 h-full w-1/3 bg-[#403D91] animate-pulse-indeterminate"></div>
+            </div>
+          ) : uploadStatus === "processing" && uploadProgress !== null ? (
             <div className="overflow-hidden rounded-[10px] border-[1px] border-[#403D91] h-[20px]">
               <div
                 className="h-full bg-[#403D91] transition-all duration-500 ease-in-out"
                 style={{ width: `${uploadProgress}%` }}
               ></div>
             </div>
-          ) : (
+          ) : uploadStatus === "processing" && uploadProgress === null ? (
             // Indeterminate progress bar (animated)
             <div className="overflow-hidden rounded-[10px] border-[1px] border-[#403D91] h-[20px] relative bg-white">
               <div className="absolute top-0 left-0 h-full w-1/3 bg-[#403D91] animate-pulse-indeterminate"></div>
             </div>
-          )}
+          ) : uploadStatus === "completed" ? (
+            <div className="overflow-hidden rounded-[10px] border-[1px] border-[#403D91] h-[20px]">
+              <div
+                className="h-full bg-[#403D91] transition-all duration-500 ease-in-out"
+                style={{ width: `100%` }}
+              ></div>
+            </div>
+          ) : uploadStatus === "failed" ? (
+            <div className="overflow-hidden rounded-[10px] border-[1px] border-[#403D91] h-[20px]">
+              <div
+                className="h-full bg-[#403D91] transition-all duration-500 ease-in-out"
+                style={{ width: `0%` }}
+              ></div>
+            </div>
+          ) : null}
         </div>
 
         <div className="flex flex-row justify-start gap-[5px] items-center">
-          {uploadProgress !== 100 ? (
+          {uploadStatus !== "completed" ? (
             <>
               <Loader2 className="w-[22px] h-[22px] text-[#FD6A2A] animate-spin" />
               <p className="text-[15px] text-black font-normal">
