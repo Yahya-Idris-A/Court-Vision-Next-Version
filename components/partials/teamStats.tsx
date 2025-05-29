@@ -96,23 +96,25 @@ const MatchStatsCard: React.FC<MatchStatsCardProps> = ({
       {/* Team Logos and VS */}
       <div className="flex flex-row gap-[50px] justify-center items-center">
         <div className="flex flex-row items-center justify-end">
-          <Image
+          {/* <Image
             src={homeLogo}
             alt="Home Team Logo"
             width={120}
             height={120}
             className="max-sm:w-[60px] max-sm:h-[60px]"
-          />
+          /> */}
+          <p className="text-[30px] text-[#4B465C] font-semibold">Team A</p>
         </div>
         <h1 className="text-[36px] text-[#4B465C] font-semibold">VS</h1>
         <div className="flex flex-row items-center justify-start">
-          <Image
+          {/* <Image
             src={awayLogo}
             alt="Away Team Logo"
             width={120}
             height={120}
             className="max-sm:w-[60px] max-sm:h-[60px]"
-          />
+          /> */}
+          <p className="text-[30px] text-[#4B465C] font-semibold">Team B</p>
         </div>
       </div>
 

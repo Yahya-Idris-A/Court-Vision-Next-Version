@@ -1,5 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import coordinatesData from "../../public/data/trackingData.json";
+import { useEffect, useRef } from "react";
+import coordinatesData from "../../public/data/analysis.json";
+
+type HeatMapProps = {
+  playerIds: string[];
+};
 
 interface Point {
   x: number;
@@ -24,13 +28,11 @@ declare global {
 const COURT_WIDTH = 28;
 const COURT_HEIGHT = 15;
 
-export default function CourtHeatmap() {
+const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
   const courtContainerRef = useRef<HTMLDivElement | null>(null);
   const courtImageRef = useRef<HTMLImageElement | null>(null);
 
-  const [heatmapInstance, setHeatmapInstance] = useState<any>(null);
   const playersCoordinates = useRef<Record<string, Point[]>>({});
-
   const finalDataCoordinates = useRef<HeatmapData>({ max: 0, data: [] });
 
   const scaleXRef = useRef(0);
@@ -70,7 +72,7 @@ export default function CourtHeatmap() {
         ? playerIds
         : Object.keys(playersCoordinates.current);
 
-    console.log("Selected player IDs:", playerIds && playerIds.length);
+    // console.log("Selected player IDs:", playerIds);
     let virtualWidth = 0;
     let virtualHeight = 0;
 
@@ -106,7 +108,7 @@ export default function CourtHeatmap() {
 
     finalDataCoordinates.current = { max: maxIntensity, data: heatmapData };
 
-    console.log("Final heatmap data:", heatmapData);
+    // console.log("Final heatmap data:", heatmapData);
   };
 
   const initHeatmap = async () => {
@@ -129,9 +131,7 @@ export default function CourtHeatmap() {
         blur: 0.85,
       });
 
-      setHeatmapInstance(heatmap);
-
-      getHeatmapData([]);
+      getHeatmapData(playerIds);
 
       const scaledDataPoints = {
         max: finalDataCoordinates.current.max,
@@ -143,7 +143,7 @@ export default function CourtHeatmap() {
       };
 
       heatmap.setData(scaledDataPoints);
-      console.log("Heatmap data set:", scaledDataPoints);
+      // console.log("Heatmap data set:", scaledDataPoints);
     } catch (error) {
       console.error("Error initializing heatmap:", error);
     }
@@ -153,42 +153,60 @@ export default function CourtHeatmap() {
     setTimeout(initHeatmap, 100);
   };
 
-  const handleResize = () => {
-    setTimeout(initHeatmap, 200);
-  };
-
   useEffect(() => {
     // Isi koordinat pemain saat mount
-    playersCoordinates.current = coordinatesData;
+    // Transform array to Record<string, Point[]>
+    playersCoordinates.current = coordinatesData.players.reduce(
+      (
+        acc: Record<string, Point[]>,
+        curr: { player_id: number; x: number; y: number }
+      ) => {
+        const key = String(curr.player_id);
+        if (!acc[key]) acc[key] = [];
+        acc[key].push({ x: curr.x, y: curr.y });
+        return acc;
+      },
+      {}
+    );
 
-    // Jalankan hanya jika data sudah ada
-    if (Object.keys(playersCoordinates.current).length > 0) {
-      console.log(
-        "🎯 Data pemain berhasil dimuat:",
-        playersCoordinates.current
-      );
+    // --- ResizeObserver Setup ---
+    const containerElement = courtContainerRef.current;
+    let resizeObserver: ResizeObserver | null = null;
 
-      // Mulai inisialisasi heatmap
-      if (courtImageRef.current?.complete) {
-        initHeatmap();
-      }
-    } else {
-      console.warn("⚠️ Data pemain masih kosong saat mount.");
+    if (containerElement) {
+      resizeObserver = new ResizeObserver(() => {
+        // console.log("Court container resized, triggering heatmap update.");
+        // Tidak perlu setTimeout di sini jika updateOrInitializeHeatmap sudah menangani async dengan baik
+        const currentContainer = courtContainerRef.current;
+        if (currentContainer) {
+          const canvas = currentContainer.querySelector("canvas");
+          if (canvas) {
+            canvas.remove();
+            initHeatmap();
+          }
+        }
+      });
+      resizeObserver.observe(containerElement);
     }
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    return () => {
+      if (resizeObserver && containerElement) {
+        resizeObserver.unobserve(containerElement);
+      }
+    };
+  }, [playerIds]);
 
   return (
     <div className="relative w-full" ref={courtContainerRef}>
       <img
         ref={courtImageRef}
-        src="/court/Heatmap.svg"
+        src="/court/bg-court.svg"
         alt="Basketball Court"
         className="w-full"
         onLoad={handleImageLoad}
       />
     </div>
   );
-}
+};
+
+export default CourtHeatmp;
