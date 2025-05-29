@@ -1,60 +1,229 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import DatePicker from "react-datepicker";
+import classNames from "classnames";
 import "react-datepicker/dist/react-datepicker.css";
 import Uppy from "@uppy/core";
-import { Dashboard } from "@uppy/react";
-import "@uppy/core/dist/style.min.css";
-import "@uppy/dashboard/dist/style.min.css";
-import { ImagePlus, User, Mail, Phone, Calendar, Save } from "lucide-react";
+import type { UppyFile as GenericUppyFile } from "@uppy/core";
+import AwsS3 from "@uppy/aws-s3";
+import { ImagePlus, User, Mail, Save } from "lucide-react";
 import * as authService from "@/services/authServices";
+import * as updateUser from "@/services/updateUserServices";
+import * as uploadService from "@/services/uploadServices";
 
-interface UserData {
-  id: number;
-  name: string;
-  email: string;
-}
+type UppyFile = GenericUppyFile<
+  Record<string, unknown>,
+  Record<string, unknown>
+>;
 
 const page = () => {
-  const [uppy] = useState(
-    () =>
-      new Uppy({
-        restrictions: {
-          maxNumberOfFiles: 1,
-          allowedFileTypes: ["image/*"],
-        },
-        autoProceed: true,
-      })
-  );
+  interface FileInfo {
+    id: string;
+    name: string;
+    size: number;
+    type: string;
+  }
 
-  const [selectedImage, setSelectedImage] = useState("/user/Avatar.png");
+  const [selectedImage, setSelectedImage] = useState("/user/user.svg");
   const [selectedImageName, setSelectedImageName] = useState("");
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoadingUserData, setIsLoadingUserData] = useState(true);
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [userPhone, setUserPhone] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
+  const [photo_url, setPhoto_url] = useState("");
+
+  const selectedFileRef = useRef<FileInfo | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const uppyRef = useRef<Uppy | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getUserData = async () => {
-    const data = await authService.getUser();
-    setUserData(data);
-    setUserName(data?.name || "");
-    setUserEmail(data?.email || "");
+    setIsLoadingUserData(true); // Mulai loading
+    try {
+      const data = await authService.getUser();
+      setUserName(data?.name || "");
+      setUserEmail(data?.email || "");
+      setSelectedImage(data?.photo_url || "/user/user.svg");
+    } catch (error) {
+      console.error("Gagal mengambil data pengguna:", error);
+      setSelectedImage("/user/user.svg");
+    } finally {
+      setIsLoadingUserData(false); // Selesai loading
+    }
+  };
+
+  // Untuk input file
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Handle kalau input file manual
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      selectedFileRef.current = {
+        id: crypto.randomUUID(),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      };
+      uppyRef.current?.addFile({
+        source: "file input",
+        name: file.name,
+        type: file.type,
+        data: file,
+      });
+    }
   };
 
   useEffect(() => {
     getUserData();
+
+    // Set header untuk upload video biar tidak error, kalau di set di awal nanti server tidak bisa membaca token
+    uploadService.setHeaders();
+
+    // Inisiasi Uppy
+    const uppyInstance = new Uppy({
+      id: "basketballUploader",
+      autoProceed: true,
+      restrictions: {
+        maxFileSize: 10000000, // 10MB
+        allowedFileTypes: [".jpg", ".jpeg", ".png", ".svg"],
+        maxNumberOfFiles: 1,
+      },
+    });
+
+    // Set Uppy biar bisa dipakai kalau input file manual tanpa drag and drop
+    uppyRef.current = uppyInstance;
+
+    // Logic upload makai AWS S3
+    uppyInstance.use(AwsS3, {
+      shouldUseMultipart: false,
+      async getUploadParameters(file, options) {
+        const result = await uploadService.getSignedUrl(
+          file.name ?? "",
+          file.type,
+          options.signal
+        );
+        const { method, url } = result.data;
+        return {
+          method,
+          url,
+          fields: {},
+          headers: {
+            "Content-Type": file.type,
+          },
+        };
+      },
+    });
+
+    // Uppy events saat file ditambahkan
+    uppyInstance.on("file-added", (file: UppyFile) => {
+      if (file && file.id && file.name && file.size && file.type) {
+        selectedFileRef.current = {
+          id: file.id,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        };
+        setUploadProgress(0);
+      }
+    });
+
+    // Uppy events saat upload sedang berprogress
+    uppyInstance.on("upload-progress", (file, progress) => {
+      if (selectedFileRef && file && selectedFileRef.current?.id === file.id) {
+        setIsUploading(true);
+        if (progress.bytesTotal !== null) {
+          setUploadProgress(
+            Math.floor((progress.bytesUploaded / progress.bytesTotal) * 100)
+          );
+        }
+      }
+    });
+
+    // Uppy events saat upload video telah suskses
+    uppyInstance.on("upload-success", (file, response) => {
+      setIsUploading(false);
+      setUploadSuccess(true);
+      setUploadProgress(100);
+      setPhoto_url(response.uploadURL || "");
+      console.log("Upload successful to:", response.uploadURL);
+    });
+
+    // Logic drag and drop file
+    const dropZone = document.querySelector(".drop-zone");
+
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+    };
+
+    const handleDrop = (e: DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+      if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
+        console.log(e.dataTransfer.files);
+
+        const file = e.dataTransfer.files[0];
+        selectedFileRef.current = {
+          id: crypto.randomUUID(),
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        };
+        uppyInstance.addFile({
+          source: "file input",
+          name: file.name,
+          type: file.type,
+          data: file,
+        });
+        e.dataTransfer.clearData();
+      }
+    };
+    // uppyInstance.cancelAll();
+
+    if (dropZone) {
+      dropZone.addEventListener("dragover", handleDragOver as EventListener);
+      dropZone.addEventListener("dragleave", handleDragLeave as EventListener);
+      dropZone.addEventListener("drop", handleDrop as EventListener);
+    }
+
+    return () => {
+      if (dropZone) {
+        dropZone.removeEventListener(
+          "dragover",
+          handleDragOver as EventListener
+        );
+        dropZone.removeEventListener(
+          "dragleave",
+          handleDragLeave as EventListener
+        );
+        dropZone.removeEventListener("drop", handleDrop as EventListener);
+      }
+    };
   }, []);
 
   const handleSave = () => {
     // Implementasi logika penyimpanan data
+    try {
+      updateUser.updateUserData(userName, userEmail, photo_url);
+      console.log("Sukses");
+    } catch (error) {
+      console.log("Update Failed");
+      console.error(error);
+    }
     console.log("Data disimpan:", {
       userName,
       userEmail,
-      userPhone,
-      dateOfBirth,
-      selectedImageName,
+      photo_url,
     });
   };
   return (
@@ -67,14 +236,32 @@ const page = () => {
       <div className="flex flex-col items-center justify-start w-full p-[32px] bg-white stroke-[#667085] shadow">
         {/* <FormProfile /> */}
         <div className="flex flex-col items-center w-full p-4">
-          {selectedImage && (
-            <Image
-              width={50} // default width, bisa diubah
-              height={50} // default height, bisa diubah
-              src={selectedImage}
-              alt="Selected"
-              className="w-36 h-36 mb-5 rounded-full object-cover"
-            />
+          {isLoadingUserData ? (
+            // Skeleton Loader
+            <div
+              className="w-36 h-36 mb-5 rounded-full bg-gray-300 animate-pulse"
+              aria-label="Memuat gambar profil..." // Untuk aksesibilitas
+            ></div>
+          ) : (
+            selectedImage && (
+              <Image
+                // Jika w-36 dan h-36 adalah 9rem (144px jika 1rem=16px)
+                // Sebaiknya width dan height di props sesuai dengan ukuran di className untuk performa optimal
+                width={144}
+                height={144}
+                src={selectedImage}
+                alt="Foto Profil"
+                className="w-36 h-36 mb-5 rounded-full object-cover"
+                // Opsional: Tambahkan key untuk memaksa re-render jika src berubah dari/ke default
+                key={selectedImage}
+                // Fallback jika URL gambar dari API error (misal broken link)
+                onError={() => {
+                  if (selectedImage !== "/user/user.svg") {
+                    setSelectedImage("/user/user.svg");
+                  }
+                }}
+              />
+            )
           )}
 
           {selectedImageName && (
@@ -85,7 +272,14 @@ const page = () => {
             </div>
           )}
 
-          <div className="drop-zone border-[2px] w-full border-dashed border-[#9e9e9e] rounded-[8px] px-[40px] py-[20px] cursor-pointer mb-[15px] transition-all duration-300 ease-in text-center hover:border-[#FD6A2A]">
+          <div
+            className={classNames(
+              "drop-zone border-2 border-dashed rounded-[8px] px-[40px] py-[20px] w-full cursor-pointer mb-[15px] transition-all duration-300 ease-in text-center",
+              isDragging ? "border-[#FD6A2A]" : "border-[#9e9e9e]",
+              "hover:border-[#FD6A2A]"
+            )}
+            onClick={triggerFileInput}
+          >
             <div className="flex flex-col justify-center items-center">
               <div className="mb-[10px]">
                 <ImagePlus size={50} className="text-[#FD6A2A] text-[40px]" />
@@ -94,11 +288,39 @@ const page = () => {
                 Browse Image or Drag Here to Upload
               </p>
             </div>
-            {/* Hidden file input to trigger native file selection */}
-            <input type="file" accept="image/*" className="hidden" />
+            {/* Hidden file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              accept="image/*"
+              className="hidden"
+            />
             {/* Hidden Uppy Dashboard (used for file picking but not displayed) */}
             <div id="uppy-dashboard" className="hidden"></div>
           </div>
+          {/* Upload progress */}
+          {selectedFileRef.current && (
+            <div className="px-[8px] py-[12px] mb-[15px] w-full">
+              <div className="flex flex-row items-center mb-[6px]">
+                <div className="mr-[10px]">
+                  <ImagePlus className="text-[#FD6A2A] w-[40px] h-[40px] max-sm:w-[30px] max-sm:h-[30px]" />
+                </div>
+                <span className="grow truncate text-left text-black">
+                  {selectedFileRef.current?.name}
+                </span>
+                <span className="ml-[10px] text-[14px] text-black">
+                  {uploadProgress}%
+                </span>
+              </div>
+              <div className="overflow-hidden rounded-[10px] border border-[#403D91] h-[10px]">
+                <div
+                  className="bg-[#FD6A2A] h-full transition-all"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col gap-4 w-full">
             <div className="flex items-center rounded py-2 relative">
@@ -131,43 +353,6 @@ const page = () => {
               >
                 Email
               </label>
-            </div>
-
-            <div className="flex flex-row w-full gap-[32px] justify-between">
-              <div className="flex items-center rounded py-2 w-full relative">
-                <Phone className="text-gray-400 mr-2 absolute ml-1" />
-                <input
-                  type="tel"
-                  className="w-full border border-gray-300 rounded py-2 text-[14px] text-black pl-8"
-                  value={userPhone}
-                  onChange={(e) => setUserPhone(e.target.value)}
-                />
-                <label
-                  className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-gray-400 transition-transform duration-300 ease-in-out 
-                  ${userPhone ? "top-[-3px] bg-white" : ""}`}
-                >
-                  Phone Number
-                </label>
-              </div>
-
-              <div className="flex items-center rounded py-2 w-full relative">
-                <Calendar className="text-gray-400 mr-2 absolute ml-1" />
-                <DatePicker
-                  selected={dateOfBirth}
-                  onChange={(date: Date | null) => setDateOfBirth(date)}
-                  className="w-full border border-gray-300 rounded px-10 py-2 text-[14px] text-black"
-                  placeholderText="Date of Birth"
-                />
-                <label
-                  className={
-                    dateOfBirth
-                      ? "top-[-3px] bg-white text-gray-400 absolute left-[40px] text-[14px] px-[5px] pointer-events-none"
-                      : "hidden"
-                  }
-                >
-                  Date of Birth
-                </label>
-              </div>
             </div>
           </div>
 

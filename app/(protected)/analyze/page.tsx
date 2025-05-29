@@ -235,6 +235,7 @@ const page = () => {
 
   const getAllVideos = async () => {
     const rawData = await analyzeService.getAllVideos();
+    console.log("video data: ", rawData);
 
     const formattedData: VideoData[] = rawData.map((item: any) => ({
       id: item.id,

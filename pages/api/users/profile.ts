@@ -5,32 +5,20 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ message: "Method not allowed" });
-  }
-
-  const authHeader = req.headers.authorization;
-  console.log("Authorization Header:", req.headers.authorization);
-
-  if (!authHeader) {
-    return res.status(401).json({ message: "Authentication token is missing" });
-  }
+  const url = `${process.env.SECRET_API_BASE_URL}/api/users/profile`;
 
   try {
-    const backendRes = await axios.get(
-      `${process.env.SECRET_API_BASE_URL}/api/users/profile`,
-      {
-        headers: {
-          Authorization: authHeader,
-        },
-      }
-    );
+    const response = await axios({
+      method: req.method,
+      url,
+      headers: { Authorization: req.headers.authorization || "" },
+      ...(req.method === "GET" || req.method === "DELETE"
+        ? { params: req.query }
+        : { params: req.query, data: req.body }),
+    });
 
-    return res.status(200).json(backendRes.data);
+    res.status(response.status).json(response.data);
   } catch (error: any) {
-    const status = error.response?.status || 500;
-    const message = error.response?.data?.message || "Internal server error";
-
-    return res.status(status).json({ message });
+    res.status(error.response?.status || 500).json({ message: error.message });
   }
 }
