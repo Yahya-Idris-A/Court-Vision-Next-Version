@@ -21,13 +21,13 @@ export default function Navbar() {
       }
     };
 
-    updateHeight();
-    window.addEventListener("resize", updateHeight);
-    return () => window.removeEventListener("resize", updateHeight);
+    // updateHeight();
+    // window.addEventListener("resize", updateHeight);
+    // return () => window.removeEventListener("resize", updateHeight);
   }, [setHeight]);
 
   return (
-    <nav id="navbar" className={styles.navbar} ref={navbarRef}>
+    <nav id="navbar" className={`${styles.navbar}`} ref={navbarRef}>
       <input type="checkbox" id="sidebar-active" className="hidden" />
       <label id="overlay" htmlFor="sidebar-active" />
       <div className="flex flex-row justify-between items-center w-full">
@@ -64,7 +64,7 @@ export default function Navbar() {
           <div className="max-sm:w-full">
             <Link
               href="/sign-in"
-              className="bg-[#FD6A2A] text-white px-4.5 py-2.5 rounded-[8px] flex gap-[8px] text-[20px] font-semibold items-center cursor-pointer max-sm:h-auto max-sm:w-full max-sm:justify-center"
+              className="bg-[#FD6A2A] text-white px-4.5 py-2.5 rounded-[8px] flex gap-[8px] text-[20px] font-semibold items-center cursor-pointer max-sm:h-auto max-sm:w-full max-sm:justify-center whitespace-nowrap"
             >
               Sign In
               <LogIn className="text-[24px] max-sm:text-[20px] text-white" />

@@ -74,7 +74,7 @@ export default function Carousel({ slides }: CarouselProps) {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center xl:gap-[24px] gap-[5px] relative z-10">
-        <h1 className="xl:text-[120px] md:text-[54px] lg:text-[84px] text-[34px] font-semibold text-white text-center xl:mx-[209px] lg:mx-[100px] md:mx-[100px] mx-0 xl:leading-[100px] lg:leading-[80px] md:leading-[50px] leading-[40px]">
+        <h1 className="xl:text-[110px] md:text-[54px] lg:text-[84px] text-[34px] font-semibold text-white text-center xl:mx-[209px] lg:mx-[100px] md:mx-[100px] mx-0 xl:leading-[100px] lg:leading-[80px] md:leading-[50px] leading-[40px]">
           Revolutionize Your Basketball Analysis!
         </h1>
         <h5 className="xl:text-[24px] lg:text-[14px] text-[8px] font-normal text-white mb-[88px] xl:leading-[40px] leading-[10px] xl:mt-[14px] lg:mt-[24px] md:mt-[8px] mt-0 text-center">

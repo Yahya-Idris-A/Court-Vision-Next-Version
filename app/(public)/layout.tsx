@@ -8,10 +8,10 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <NavbarProvider>
+    <div>
       <BasicNavbar />
       {children}
       <Footer />
-    </NavbarProvider>
+    </div>
   );
 }
