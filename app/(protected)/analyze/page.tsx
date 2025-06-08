@@ -54,8 +54,8 @@ const sampleData = [
     thumbnail: "/thumb/thumbnail.jpg",
     title: "Basket Match Day 3",
     date: "2024-08-21",
-    uploadProgress: 100,
-    uploadStatus: "completed",
+    uploadProgress: 90,
+    uploadStatus: "failed",
     detailAnalysisUrl: "/detail-analyze/5",
   },
   {

@@ -42,15 +42,13 @@ export default function AuthNavbar() {
       ) : (
         userData?.photo_url && (
           <Image
-            // Jika w-36 dan h-36 adalah 9rem (144px jika 1rem=16px)
-            // Sebaiknya width dan height di props sesuai dengan ukuran di className untuk performa optimal
             width={50}
             height={50}
-            src={userData.photo_url || "/user/user.svg"}
+            src={userData?.photo_url || "/user/user.svg"}
             alt="Foto Profil"
             className="size-[50px] my-[6px] rounded-full object-cover"
             // Opsional: Tambahkan key untuk memaksa re-render jika src berubah dari/ke default
-            key={userData.photo_url || "/user/user.svg"}
+            key={userData?.photo_url || "/user/user.svg"}
             // Fallback jika URL gambar dari API error (misal broken link)
             onError={() => {
               if (userData.photo_url !== "/user/user.svg") {

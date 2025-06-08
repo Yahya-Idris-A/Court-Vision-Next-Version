@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
 interface AnalysisCardProps {
@@ -32,14 +32,14 @@ export default function AnalysisCard({
     return () => clearInterval(interval);
   }, []);
 
-  const loadingText = `Analyzing${".".repeat(loadingStep)}`;
+  const loadingText = `${uploadStatus}${".".repeat(loadingStep)}`;
 
   return (
     <Link
       href={detailAnalysisUrl}
       className="flex flex-row max-sm:flex-col gap-[20px] px-[8px] py-[10px] w-full rounded-[10px] bg-white stroke-[#667085] shadow cursor-pointer"
     >
-      <div className="flex max-w-[20%] max-sm:max-w-full w-full">
+      <div className="flex max-w-[250px] max-sm:max-w-full w-full">
         <img
           src={thumbnail}
           alt=""
@@ -104,17 +104,22 @@ export default function AnalysisCard({
         </div>
 
         <div className="flex flex-row justify-start gap-[5px] items-center">
-          {uploadStatus !== "completed" ? (
+          {uploadStatus == "waiting" || uploadStatus == "processing" ? (
             <>
               <Loader2 className="w-[22px] h-[22px] text-[#FD6A2A] animate-spin" />
               <p className="text-[15px] text-black font-normal">
                 {loadingText}
               </p>
             </>
-          ) : (
+          ) : uploadStatus === "completed" ? (
             <>
               <CheckCircle className="w-[22px] h-[22px] text-[#FD6A2A]" />
               <p className="text-[15px] text-black font-normal">Completed</p>
+            </>
+          ) : (
+            <>
+              <XCircle className="w-[22px] h-[22px] text-[#FD6A2A]" />
+              <p className="text-[15px] text-black font-normal">Failed</p>
             </>
           )}
         </div>

@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const Footer = () => {
   return (
-    <div className="bg-[#403D91] h-full">
+    <div className="bg-[#403D91]">
       <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-[30%] mx-[70px] py-[24px] max-sm:gap-7">
         {/* Column 1: Logo & Social Media */}
         <div className="flex flex-col gap-[12px]">

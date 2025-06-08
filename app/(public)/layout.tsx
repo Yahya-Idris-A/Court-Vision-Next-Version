@@ -8,7 +8,7 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
+    <div className="min-h-[100dvh] responsiveFooter">
       <BasicNavbar />
       {children}
       <Footer />
