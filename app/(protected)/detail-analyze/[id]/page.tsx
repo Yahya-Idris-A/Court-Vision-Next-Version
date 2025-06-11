@@ -9,18 +9,18 @@ import EventMap from "@/components/partials/eventMap";
 //   };
 // }
 
-const DetailAnalysisPage = () => {
-  // const { id } = params;
-
-  // Di sini kamu bisa fetch data berdasarkan ID, atau tampilkan langsung konten
-  // if (!id) return notFound();
-
+export default async function DetailAnalysisPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] max-sm:mt-[16px]">
       {/* Header */}
       <div className="flex flex-row items-center justify-start w-full p-[20px] bg-white stroke-[#667085] shadow">
         <p className="text-[18px] text-[#4B465C] font-semibold">
-          Detailed Analysis
+          Detailed Analysis {id}
         </p>
       </div>
       {/* Video Player */}
@@ -38,6 +38,4 @@ const DetailAnalysisPage = () => {
       <EventMap />
     </div>
   );
-};
-
-export default DetailAnalysisPage;
+}

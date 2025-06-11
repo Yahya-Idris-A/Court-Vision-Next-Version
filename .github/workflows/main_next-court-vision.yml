@@ -1,5 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+# .github/workflows/main.yml
 
 name: Build and deploy Node.js app to Azure Web App - Next-Court-Vision
 
@@ -10,55 +9,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy: # <-- Menggabungkan build dan deploy menjadi satu job untuk kesederhanaan
     runs-on: ubuntu-latest
-    permissions:
-      contents: read #This is required for actions/checkout
+    environment:
+      name: "Production"
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: "Checkout Github Action"
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: "Set up Node.js version"
         uses: actions/setup-node@v3
         with:
-          node-version: '22.x'
+          node-version: "22.x" # Pastikan versi ini cocok dengan yang di Azure App Service
 
-      - name: npm install, build, and test
+      - name: "npm install and build"
         run: |
           npm install
-          npm run build --if-present
-          npm run test --if-present
+          npm run build
 
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-app
-          path: release.zip
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: node-app
-
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
-      
-      - name: 'Deploy to Azure Web App'
+      - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Next-Court-Vision'
-          slot-name: 'Production'
-          package: .
+          app-name: "Next-Court-Vision"
+          slot-name: "Production"
+          package: . # <-- Deploy seluruh direktori kerja saat ini
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4CE85ABCFB254BE9A98288BEBA8CA44D }}
