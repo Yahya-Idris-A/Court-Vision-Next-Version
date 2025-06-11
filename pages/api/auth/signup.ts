@@ -12,10 +12,7 @@ export default async function handler(
     );
 
     res.status(response.status).json(response.data);
-  } catch (error: any) {
-    console.error("Login Proxy Error:", error?.response?.data || error.message);
-    res.status(error?.response?.status || 500).json({
-      message: error?.response?.data?.message || "Internal Server Error",
-    });
+  } catch (error) {
+    console.error("Sign Up Proxy Error", error);
   }
 }

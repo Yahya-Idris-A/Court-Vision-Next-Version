@@ -38,7 +38,7 @@ const SignUp: React.FC = () => {
         localStorage.setItem("token", response.data.token);
         console.log("Token:", response.data.token);
         window.location.href = "/user";
-      } catch (error: any) {
+      } catch (error) {
         console.error("Sign Up failed:", error);
         alert("Sign Up gagal. Cek email atau password!");
       } finally {

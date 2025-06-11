@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import coordinatesData from "../../public/data/analysis.json";
+import Image from "next/image";
+import { useCallback } from "react";
 
 type HeatMapProps = {
   playerIds: string[];
@@ -19,12 +21,6 @@ interface HeatmapData {
   data: HeatmapPoint[];
 }
 
-declare global {
-  interface Window {
-    h337: any;
-  }
-}
-
 const COURT_WIDTH = 28;
 const COURT_HEIGHT = 15;
 
@@ -40,16 +36,16 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
   const heatmapRadius = 100;
 
   const loadHeatmapJs = async () => {
-    if (typeof window !== "undefined" && (window as any).h337) {
-      return (window as any).h337;
+    if (typeof window !== "undefined" && window.h337) {
+      return window.h337;
     }
 
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<typeof window.h337>((resolve, reject) => {
       const script = document.createElement("script");
       script.src =
         "https://cdnjs.cloudflare.com/ajax/libs/heatmap.js/2.0.2/heatmap.min.js";
       script.async = true;
-      script.onload = () => resolve((window as any).h337);
+      script.onload = () => resolve(window.h337);
       script.onerror = () => reject(new Error("Failed to load heatmap.js"));
       document.head.appendChild(script);
     });
@@ -111,7 +107,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
     // console.log("Final heatmap data:", heatmapData);
   };
 
-  const initHeatmap = async () => {
+  const initHeatmap = useCallback(async () => {
     const container = courtContainerRef.current;
     const image = courtImageRef.current;
 
@@ -135,6 +131,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
 
       const scaledDataPoints = {
         max: finalDataCoordinates.current.max,
+        min: 0,
         data: finalDataCoordinates.current.data.map((point) => ({
           x: Math.round(point.x * scaleXRef.current),
           y: Math.round(point.y * scaleYRef.current),
@@ -147,7 +144,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
     } catch (error) {
       console.error("Error initializing heatmap:", error);
     }
-  };
+  }, []);
 
   const handleImageLoad = () => {
     setTimeout(initHeatmap, 100);
@@ -198,12 +195,21 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
 
   return (
     <div className="relative w-full" ref={courtContainerRef}>
-      <img
+      {/* <img
         ref={courtImageRef}
         src="/court/bg-court.svg"
         alt="Basketball Court"
         className="w-full"
         onLoad={handleImageLoad}
+      /> */}
+      <Image
+        src="/court/bg-court.svg"
+        alt="Basketball Court"
+        width={0}
+        height={0}
+        ref={courtImageRef}
+        onLoad={handleImageLoad}
+        className="object-cover w-full h-full"
       />
     </div>
   );

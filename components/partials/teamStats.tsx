@@ -1,10 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import Image from "next/image";
 
 interface MatchStatsCardProps {
-  homeLogo: string;
-  awayLogo: string;
   totalShots: {
     home: number;
     away: number;
@@ -76,8 +73,6 @@ const StatRow = ({
 };
 
 const MatchStatsCard: React.FC<MatchStatsCardProps> = ({
-  homeLogo,
-  awayLogo,
   totalShots,
   threePointers,
   twoPointers,

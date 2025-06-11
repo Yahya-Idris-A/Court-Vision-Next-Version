@@ -27,7 +27,7 @@ const SignIn: React.FC = () => {
       localStorage.setItem("token", response.data.token);
       console.log("Token:", response.data.token);
       window.location.href = "/user";
-    } catch (error: any) {
+    } catch (error) {
       console.error("Login failed:", error);
       alert("Login gagal. Cek email atau password!");
     } finally {
@@ -94,7 +94,7 @@ const SignIn: React.FC = () => {
         authChoiceSlot={
           <div className="flex flex-col w-full items-center mt-[32px]">
             <span className="text-black text-[15px] font-normal text-center">
-              Don't have an account?{" "}
+              Don't have an account?
               <a
                 href="/sign-up"
                 className="text-[#403D91] hover:underline ml-1"

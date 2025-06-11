@@ -5,8 +5,6 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
-
 const axiosUpload = axios.create();
 
 // Handler request
@@ -17,7 +15,7 @@ const requestHandler = (
 };
 
 // Handler response
-const responseHandler = (response: AxiosResponse): any => {
+const responseHandler = (response: AxiosResponse) => {
   return response.data;
 };
 

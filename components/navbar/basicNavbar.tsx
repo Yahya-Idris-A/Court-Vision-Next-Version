@@ -4,27 +4,15 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Menu, X, LogIn } from "lucide-react";
 import styles from "./basicNavbar.module.css";
-import { useNavbar } from "@/components/navbar/basicNavbarContext";
+import Image from "next/image";
 
 export default function Navbar() {
   const [user, setUser] = useState<string | null>(null);
   const navbarRef = useRef<HTMLDivElement>(null);
-  const { setHeight } = useNavbar();
 
   useEffect(() => {
     setUser(localStorage.getItem("token"));
   }, []);
-  useEffect(() => {
-    const updateHeight = () => {
-      if (navbarRef.current) {
-        setHeight(navbarRef.current.offsetHeight);
-      }
-    };
-
-    // updateHeight();
-    // window.addEventListener("resize", updateHeight);
-    // return () => window.removeEventListener("resize", updateHeight);
-  }, [setHeight]);
 
   return (
     <nav id="navbar" className={`${styles.navbar}`} ref={navbarRef}>
@@ -32,7 +20,13 @@ export default function Navbar() {
       <label id="overlay" htmlFor="sidebar-active" />
       <div className="flex flex-row justify-between items-center w-full">
         <Link href="/home" className="h-full flex items-center mr-auto">
-          <img src="companyLogo/Logo.png" alt="Logo" className="size-[44px]" />
+          <Image
+            src="/companyLogo/Logo.png"
+            alt="Logo"
+            width={44}
+            height={44}
+            className="object-cover size-[44px]"
+          />
         </Link>
         <label
           htmlFor="sidebar-active"

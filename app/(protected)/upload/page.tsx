@@ -16,7 +16,7 @@ type UppyFile = GenericUppyFile<
   Record<string, unknown>
 >;
 
-const page = () => {
+const Page = () => {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date | null>(null);
   const [venue, setVenue] = useState("");
@@ -429,4 +429,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

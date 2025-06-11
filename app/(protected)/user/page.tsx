@@ -16,7 +16,7 @@ type UppyFile = GenericUppyFile<
   Record<string, unknown>
 >;
 
-const page = () => {
+const Page = () => {
   interface FileInfo {
     id: string;
     name: string;
@@ -371,4 +371,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-export default function sidebar() {
+export default function Sidebar() {
   const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
   const toggleSidebar = () => {
     setIsSidebarExpanded((prev) => !prev);

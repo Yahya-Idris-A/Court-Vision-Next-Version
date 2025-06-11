@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import Image from "next/image";
 
 // Ukuran asli lapangan (misalnya dalam meter, sesuai dengan data koordinat)
 const COURT_WIDTH = 28; // FIBA: 28m, NBA: 94ft
@@ -19,7 +20,7 @@ const Shotmap = () => {
     { x: number; y: number; value: string }[]
   >([]);
 
-  const initShotmap = async () => {
+  const initShotmap = useCallback(async () => {
     try {
       if (courtRef.current) {
         const imageRect = courtRef.current.getBoundingClientRect();
@@ -36,7 +37,7 @@ const Shotmap = () => {
     } catch (error) {
       console.error("Error initializing shotmap:", error);
     }
-  };
+  }, []);
 
   const handleResize = () => {
     setTimeout(initShotmap, 200);
@@ -54,11 +55,19 @@ const Shotmap = () => {
   return (
     <div ref={courtRef} className="relative w-full">
       {/* Gambar Lapangan */}
-      <img
+      {/* <img
         src="/court/bg-court.svg"
         className="w-full"
         onLoad={initShotmap}
         alt="Court"
+      /> */}
+      <Image
+        src="/court/bg-court.svg"
+        alt="Basketball Court"
+        width={0}
+        height={0}
+        onLoad={initShotmap}
+        className="object-cover w-full h-full"
       />
 
       {/* Titik Tembakan Pemain */}

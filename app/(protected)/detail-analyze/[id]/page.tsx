@@ -30,8 +30,6 @@ export default function DetailAnalysisPage({ params }: PageProps) {
       />
       {/* Stats */}
       <TeamStats
-        homeLogo="/team/Home.png"
-        awayLogo="/team/Away.png"
         totalShots={{ home: 10, away: 10 }}
         threePointers={{ home: 6, away: 5 }}
         twoPointers={{ home: 4, away: 5 }}

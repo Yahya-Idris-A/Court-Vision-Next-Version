@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CheckCircle, XCircle } from "lucide-react";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 
 interface AnalysisCardProps {
   thumbnail: string;
@@ -40,9 +41,11 @@ export default function AnalysisCard({
       className="flex flex-row max-sm:flex-col gap-[20px] px-[8px] py-[10px] w-full rounded-[10px] bg-white stroke-[#667085] shadow cursor-pointer"
     >
       <div className="flex max-w-[250px] max-sm:max-w-full w-full">
-        <img
+        <Image
           src={thumbnail}
-          alt=""
+          alt={thumbnail}
+          width={250}
+          height={120}
           className="object-cover w-[250px] max-sm:w-full h-[120px] max-sm:h-full"
         />
       </div>

@@ -34,7 +34,7 @@ const requestHandler = (
 };
 
 // Handler response
-const responseHandler = (response: AxiosResponse): any => {
+const responseHandler = (response: AxiosResponse) => {
   return response.data;
 };
 

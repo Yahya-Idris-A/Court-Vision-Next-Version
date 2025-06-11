@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { PlayCircle } from "lucide-react";
+import Image from "next/image";
 
 interface VideoPlayerCardProps {
   thumbnail: string;
@@ -30,9 +31,12 @@ const VideoPlayerCard: React.FC<VideoPlayerCardProps> = ({
       >
         {!isPlaying ? (
           <>
-            <img
+            <Image
               src={thumbnail}
               alt="Video Thumbnail"
+              width={0}
+              height={0}
+              priority
               className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-80"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">

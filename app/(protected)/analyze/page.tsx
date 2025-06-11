@@ -222,7 +222,7 @@ const sampleData = [
 
 const itemsPerPage = 3;
 
-const page = () => {
+const Page = () => {
   const [videos, setVideos] = useState<VideoData[]>([]);
   const videosRef = useRef(videos);
   const [currentPage, setCurrentPage] = useState(1);
@@ -347,4 +347,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
