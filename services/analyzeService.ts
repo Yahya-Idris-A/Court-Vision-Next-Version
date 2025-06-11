@@ -14,11 +14,20 @@ export const getToken = () => {
 export const endPointUploadProgress =
   process.env.NEXT_PUBLIC_API_URL + "/api/videos/progress";
 
+interface RawVideoData {
+  id: string;
+  thumbnail: string;
+  title: string;
+  date: string;
+  uploadProgress: number | null;
+  status: string;
+  detailAnalysisUrl: string;
+}
 // get all video
-export async function getAllVideos() {
+export async function getAllVideos(): Promise<RawVideoData[]> {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  if (!token) return null;
+  if (!token) return [];
 
   axiosAnalyze.defaults.headers.common["Content-Type"] = "application/json";
   axiosAnalyze.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -28,7 +37,7 @@ export async function getAllVideos() {
     return res.data.videos;
   } catch (err) {
     console.error("Error fetching video:", err);
-    return null;
+    return [];
   }
 }
 

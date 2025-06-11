@@ -237,7 +237,7 @@ const Page = () => {
     const rawData = await analyzeService.getAllVideos();
     console.log("video data: ", rawData);
 
-    const formattedData: VideoData[] = rawData.map((item: any) => ({
+    const formattedData: VideoData[] = rawData.map((item) => ({
       id: item.id,
       thumbnail: "/thumb/thumbnail.jpg", // default
       title: item.title,

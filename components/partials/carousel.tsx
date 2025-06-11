@@ -24,16 +24,15 @@ export default function Carousel({ slides }: CarouselProps) {
   }, [navbarHeight]);
 
   useEffect(() => {
+    const goToNextSlide = () => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    };
     const interval = setInterval(() => {
       goToNextSlide();
     }, 5000);
 
     return () => clearInterval(interval);
   }, [currentSlide]);
-
-  const goToNextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  }, []);
 
   return (
     <div

@@ -144,7 +144,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
     } catch (error) {
       console.error("Error initializing heatmap:", error);
     }
-  }, []);
+  }, [playerIds]);
 
   const handleImageLoad = () => {
     setTimeout(initHeatmap, 100);
@@ -191,7 +191,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
         resizeObserver.unobserve(containerElement);
       }
     };
-  }, [playerIds]);
+  }, [playerIds, initHeatmap]);
 
   return (
     <div className="relative w-full" ref={courtContainerRef}>

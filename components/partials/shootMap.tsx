@@ -39,9 +39,9 @@ const Shotmap = () => {
     }
   }, []);
 
-  const handleResize = () => {
-    setTimeout(initShotmap, 200);
-  };
+  const handleResize = useCallback(() => {
+    initShotmap();
+  }, [initShotmap]);
 
   useEffect(() => {
     initShotmap();
@@ -50,7 +50,7 @@ const Shotmap = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [initShotmap, handleResize]);
 
   return (
     <div ref={courtRef} className="relative w-full">

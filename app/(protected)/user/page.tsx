@@ -34,8 +34,6 @@ const Page = () => {
   const selectedFileRef = useRef<FileInfo | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
   const uppyRef = useRef<Uppy | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,6 +44,7 @@ const Page = () => {
       setUserName(data?.name || "");
       setUserEmail(data?.email || "");
       setSelectedImage(data?.photo_url || "/user/user.svg");
+      setSelectedImageName(data?.photo_url || "/user/user.svg");
     } catch (error) {
       console.error("Gagal mengambil data pengguna:", error);
       setSelectedImage("/user/user.svg");
@@ -135,7 +134,6 @@ const Page = () => {
     // Uppy events saat upload sedang berprogress
     uppyInstance.on("upload-progress", (file, progress) => {
       if (selectedFileRef && file && selectedFileRef.current?.id === file.id) {
-        setIsUploading(true);
         if (progress.bytesTotal !== null) {
           setUploadProgress(
             Math.floor((progress.bytesUploaded / progress.bytesTotal) * 100)
@@ -146,8 +144,6 @@ const Page = () => {
 
     // Uppy events saat upload video telah suskses
     uppyInstance.on("upload-success", (file, response) => {
-      setIsUploading(false);
-      setUploadSuccess(true);
       setUploadProgress(100);
       setPhoto_url(response.uploadURL || "");
       console.log("Upload successful to:", response.uploadURL);
