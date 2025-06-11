@@ -1,6 +1,4 @@
-# .github/workflows/main.yml
-
-name: Build and deploy Node.js app to Azure Web App - Next-Court-Vision
+name: Build and Deploy Standalone Next.js to Azure App Service
 
 on:
   push:
@@ -29,9 +27,16 @@ jobs:
           npm install
           npm run build
 
-      # LANGKAH BARU: Hapus node_modules setelah build untuk paket yang ramping
-      - name: "Remove node_modules for deployment"
-        run: rm -rf node_modules
+      - name: "Prepare Standalone Package"
+        run: |
+          # Buat direktori baru untuk paket deployment
+          mkdir -p deployment_package
+          # Salin folder standalone
+          cp -r .next/standalone/. deployment_package/
+          # Salin folder static assets
+          cp -r .next/static deployment_package/.next/static
+          # Salin folder public assets
+          cp -r public deployment_package/public
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
@@ -39,5 +44,6 @@ jobs:
         with:
           app-name: "Next-Court-Vision"
           slot-name: "Production"
-          package: . # Deploy paket ramping (tanpa node_modules)
+          # Arahkan package ke direktori yang sudah kita siapkan
+          package: ./deployment_package
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4CE85ABCFB254BE9A98288BEBA8CA44D }}
