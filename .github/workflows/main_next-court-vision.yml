@@ -27,9 +27,9 @@ jobs:
           npm install
           npm run build
 
-      - name: "Prepare Standalone Package"
+      - name: "Prepare Standalone Package and Zip" # <-- LANGKAH INI DIPERBARUI
         run: |
-          # Buat direktori baru untuk paket deployment
+          # Buat direktori paket
           mkdir -p deployment_package
           # Salin folder standalone
           cp -r .next/standalone/. deployment_package/
@@ -37,13 +37,15 @@ jobs:
           cp -r .next/static deployment_package/.next/static
           # Salin folder public assets
           cp -r public deployment_package/public
+          # Masuk ke direktori paket dan buat file zip dari isinya
+          cd deployment_package && zip -r ../deployment.zip .
 
-      - name: "Deploy to Azure Web App"
+      - name: "Deploy to Azure Web App" # <-- LANGKAH INI DIPERBARUI
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: "Next-Court-Vision"
           slot-name: "Production"
-          # Arahkan package ke direktori yang sudah kita siapkan
-          package: ./deployment_package
+          # Deploy file zip yang baru saja kita buat
+          package: "deployment.zip"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4CE85ABCFB254BE9A98288BEBA8CA44D }}
