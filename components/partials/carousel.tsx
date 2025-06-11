@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useNavbar } from "@/components/navbar/basicNavbarContext";
-import { useCallback } from "react";
 
 interface Slide {
   src: string;
@@ -32,7 +31,7 @@ export default function Carousel({ slides }: CarouselProps) {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [currentSlide]);
+  }, [currentSlide, slides.length]);
 
   return (
     <div
