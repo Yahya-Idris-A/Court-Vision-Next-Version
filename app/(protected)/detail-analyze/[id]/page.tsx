@@ -10,7 +10,7 @@ interface PageProps {
 }
 
 const DetailAnalysisPage = async ({ params }: PageProps) => {
-  const { id } = await params;
+  const { id } = params;
 
   // Di sini kamu bisa fetch data berdasarkan ID, atau tampilkan langsung konten
   if (!id) return notFound();
