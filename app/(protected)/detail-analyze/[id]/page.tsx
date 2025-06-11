@@ -1,19 +1,19 @@
-import { notFound } from "next/navigation";
+// import { notFound } from "next/navigation";
 import VideoPlayerCard from "@/components/partials/videoPlayer";
 import TeamStats from "@/components/partials/teamStats";
 import EventMap from "@/components/partials/eventMap";
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
+// interface PageProps {
+//   params: {
+//     id: string;
+//   };
+// }
 
-const DetailAnalysisPage = async ({ params }: PageProps) => {
-  const { id } = params;
+const DetailAnalysisPage = () => {
+  // const { id } = params;
 
   // Di sini kamu bisa fetch data berdasarkan ID, atau tampilkan langsung konten
-  if (!id) return notFound();
+  // if (!id) return notFound();
 
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] max-sm:mt-[16px]">
