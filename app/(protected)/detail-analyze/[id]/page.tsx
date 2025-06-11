@@ -9,8 +9,8 @@ interface PageProps {
   };
 }
 
-export default function DetailAnalysisPage({ params }: PageProps) {
-  const { id } = params;
+const DetailAnalysisPage = async ({ params }: PageProps) => {
+  const { id } = await params;
 
   // Di sini kamu bisa fetch data berdasarkan ID, atau tampilkan langsung konten
   if (!id) return notFound();
@@ -38,4 +38,6 @@ export default function DetailAnalysisPage({ params }: PageProps) {
       <EventMap />
     </div>
   );
-}
+};
+
+export default DetailAnalysisPage;
