@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy: # <-- Menggabungkan build dan deploy menjadi satu job untuk kesederhanaan
+  build-and-deploy:
     runs-on: ubuntu-latest
     environment:
       name: "Production"
@@ -22,12 +22,16 @@ jobs:
       - name: "Set up Node.js version"
         uses: actions/setup-node@v3
         with:
-          node-version: "22.x" # Pastikan versi ini cocok dengan yang di Azure App Service
+          node-version: "20.x"
 
       - name: "npm install and build"
         run: |
           npm install
           npm run build
+
+      # LANGKAH BARU: Hapus node_modules setelah build untuk paket yang ramping
+      - name: "Remove node_modules for deployment"
+        run: rm -rf node_modules
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
@@ -35,5 +39,5 @@ jobs:
         with:
           app-name: "Next-Court-Vision"
           slot-name: "Production"
-          package: . # <-- Deploy seluruh direktori kerja saat ini
+          package: . # Deploy paket ramping (tanpa node_modules)
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4CE85ABCFB254BE9A98288BEBA8CA44D }}
