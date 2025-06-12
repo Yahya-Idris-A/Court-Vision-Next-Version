@@ -71,6 +71,7 @@ const Page = () => {
       try {
         uploadService.uploadAllData(title, dateUp, venue, video_url);
         console.log("Sukses");
+        window.location.href = "/analyze";
       } catch (error) {
         console.log("Gagal upload");
         console.error(error);
