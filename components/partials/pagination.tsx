@@ -45,7 +45,7 @@ const pagination: React.FC<PaginationProps> = ({
     }
   }
   return (
-    <div className="flex gap-[0.5rem] max-sm:gap-[4px] items-center mb-[20px]">
+    <div className="flex flex-wrap justify-center gap-[0.5rem] max-sm:gap-[4px] items-center mb-[20px]">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
