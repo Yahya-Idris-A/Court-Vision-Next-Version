@@ -25,7 +25,6 @@ const Page = () => {
   }
 
   const [selectedImage, setSelectedImage] = useState("/user/user.svg");
-  const [selectedImageName, setSelectedImageName] = useState("");
   const [isLoadingUserData, setIsLoadingUserData] = useState(true);
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -44,7 +43,6 @@ const Page = () => {
       setUserName(data?.name || "");
       setUserEmail(data?.email || "");
       setSelectedImage(data?.photo_url || "/user/user.svg");
-      setSelectedImageName(data?.photo_url || "/user/user.svg");
     } catch (error) {
       console.error("Gagal mengambil data pengguna:", error);
       setSelectedImage("/user/user.svg");
@@ -247,7 +245,7 @@ const Page = () => {
                 height={144}
                 src={selectedImage}
                 alt="Foto Profil"
-                className="w-36 h-36 mb-5 rounded-full object-cover"
+                className="w-36 h-36 max-sm:w-25 max-sm:h-25 mb-5 rounded-full object-cover"
                 // Opsional: Tambahkan key untuk memaksa re-render jika src berubah dari/ke default
                 key={selectedImage}
                 // Fallback jika URL gambar dari API error (misal broken link)
@@ -259,15 +257,6 @@ const Page = () => {
               />
             )
           )}
-
-          {selectedImageName && (
-            <div className="px-2 border-2 border-orange-500 rounded mb-5">
-              <span className="text-gray-500">
-                Selected image: {selectedImageName}
-              </span>
-            </div>
-          )}
-
           <div
             className={classNames(
               "drop-zone border-2 border-dashed rounded-[8px] px-[40px] py-[20px] w-full cursor-pointer mb-[15px] transition-all duration-300 ease-in text-center",
@@ -354,7 +343,7 @@ const Page = () => {
 
           <div className="flex justify-end w-full mt-5">
             <button
-              className="bg-orange-500 text-white px-6 py-2 rounded-[8px] flex items-center"
+              className="bg-orange-500 text-white px-6 py-2 rounded-[8px] flex items-center max-sm:w-full max-sm:justify-center"
               onClick={handleSave}
             >
               <Save className="mr-2" />

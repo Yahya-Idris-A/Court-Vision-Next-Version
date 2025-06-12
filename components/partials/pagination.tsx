@@ -45,13 +45,13 @@ const pagination: React.FC<PaginationProps> = ({
     }
   }
   return (
-    <div className="flex gap-[0.5rem] items-center mb-[20px]">
+    <div className="flex gap-[0.5rem] max-sm:gap-[4px] items-center mb-[20px]">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className="text-[#4B465C] bg-gray-200 rounded-[6px] px-[10px] py-[8px] cursor-pointer"
       >
-        <ArrowLeft />
+        <ArrowLeft className="max-sm:h-[16px] max-sm:w-[16px]" />
       </button>
 
       {pageNumbers.map((num, idx) =>
@@ -63,13 +63,13 @@ const pagination: React.FC<PaginationProps> = ({
             style={{
               background: num === currentPage ? "#FD6A2A" : "#e5e7eb",
             }}
-            className="w-[45px] py-[8px] text-[#4B465C] cursor-pointer rounded-[6px] transition-all duration-300"
+            className="w-[45px] max-sm:w-[35px] py-[8px] max-sm:py-[4px] text-[#4B465C] cursor-pointer rounded-[6px] transition-all duration-300"
           >
             {num}
           </button>
         ) : (
           <span
-            className="w-[45px] py-[8px] text-[#4B465C] rounded-[6px] transition-all duration-300 bg-[#e5e7eb] text-center"
+            className="w-[45px] max-sm:w-[35px] py-[8px] max-sm:py-[4px] text-[#4B465C] rounded-[6px] transition-all duration-300 bg-[#e5e7eb] text-center"
             key={idx}
           >
             ...
@@ -82,7 +82,7 @@ const pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === totalPages}
         className="text-[#4B465C] bg-gray-200 rounded-[6px] px-[10px] py-[8px] cursor-pointer"
       >
-        <ArrowRight />
+        <ArrowRight className="max-sm:h-[16px] max-sm:w-[16px]" />
       </button>
     </div>
   );

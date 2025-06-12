@@ -322,7 +322,7 @@ const Page = () => {
             </label>
           </div>
 
-          <div className="flex flex-row w-full gap-[32px] justify-between">
+          <div className="flex flex-row max-sm:flex-col w-full gap-[32px] max-sm:gap-4 justify-between">
             <div className="flex items-center rounded py-2 w-full relative">
               <Calendar className="text-gray-400 mr-2 absolute ml-1" />
               <DatePicker

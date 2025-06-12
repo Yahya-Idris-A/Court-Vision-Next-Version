@@ -334,7 +334,7 @@ const Page = () => {
       </div>
       {/* Pagination */}
       {sampleData.length > itemsPerPage && (
-        <div className="flex mt-4 w-full justify-end mr-[30px]">
+        <div className="flex mt-4 w-full justify-end mr-[30px] max-sm:mr-[10px]">
           <Pagination
             currentPage={currentPage}
             totalItems={totalItems}

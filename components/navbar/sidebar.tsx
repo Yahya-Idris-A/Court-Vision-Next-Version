@@ -53,7 +53,7 @@ export default function Sidebar() {
   };
   return (
     <div
-      className={`border-r bg-white stroke-[#667085] shadow transition-all duration-300 ease-in-out transform hidden sm:flex h-[100dvh] sticky top-0 z-50 ${
+      className={`border-r bg-white stroke-[#667085] shadow transition-all duration-300 ease-in-out transform sm:flex h-[100dvh] sticky max-sm:w-[100px] top-0 z-50 ${
         isSidebarExpanded ? "w-[400px]" : "w-[125px]"
       }`}
     >
@@ -63,7 +63,9 @@ export default function Sidebar() {
           <div className="flex flex-col space-y-1">
             {/* MENU HEADER */}
             <div className="flex flex-col items-center gap-[20px] w-full px-[18px] max-sm:px-[10px]">
-              <div className={`flex flex-row items-center w-full`}>
+              <div
+                className={`flex flex-row items-center w-full max-sm:justify-center`}
+              >
                 <h5
                   className={`text-[#4B465C] text-[18px] max-sm:text-[8px] font-bold ${
                     isSidebarExpanded ? "mr-[35px] max-sm:mr-0" : "mr-0"
@@ -119,7 +121,7 @@ export default function Sidebar() {
           </div>
         </div>
       </aside>
-      <div className="relative">
+      <div className="relative max-sm:hidden">
         <button
           type="button"
           className="absolute top-[0px] right-[-25px] flex h-[40px] w-[40px] items-center justify-center rounded-r-2xl bg-white stroke-[#667085] text-black  transition-shadow duration-300 ease-in-out cursor-pointer"
