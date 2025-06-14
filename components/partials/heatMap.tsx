@@ -1,10 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import coordinatesData from "../../public/data/analysis.json";
 import Image from "next/image";
 import { useCallback } from "react";
+import { useBreakpoint } from "@/lib/useBreakpoints";
+
+type TrackingData = Record<string, unknown>;
 
 type HeatMapProps = {
   playerIds: string[];
+  trackingData: TrackingData | {};
 };
 
 interface Point {
@@ -24,7 +28,7 @@ interface HeatmapData {
 const COURT_WIDTH = 28;
 const COURT_HEIGHT = 15;
 
-const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
+const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
   const courtContainerRef = useRef<HTMLDivElement | null>(null);
   const courtImageRef = useRef<HTMLImageElement | null>(null);
 
@@ -33,7 +37,23 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
 
   const scaleXRef = useRef(0);
   const scaleYRef = useRef(0);
-  const heatmapRadius = 100;
+
+  const virtualW = useRef(0);
+  const virtualH = useRef(0);
+
+  const breakpoint = useBreakpoint();
+  const heatmapRadius = useMemo(() => {
+    switch (breakpoint) {
+      case "lg":
+        return 80; // Radius untuk layar besar (desktop)
+      case "md":
+        return 50; // Radius untuk layar menengah (tablet)
+      case "sm":
+        return 30; // Radius untuk layar kecil (mobile)
+      default:
+        return 30; // Nilai default
+    }
+  }, [breakpoint]);
 
   const loadHeatmapJs = async () => {
     if (typeof window !== "undefined" && window.h337) {
@@ -49,6 +69,43 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
       script.onerror = () => reject(new Error("Failed to load heatmap.js"));
       document.head.appendChild(script);
     });
+  };
+
+  const setVirtualCourtSize = () => {
+    if (
+      trackingData &&
+      typeof trackingData === "object" &&
+      "court_length_px" in trackingData &&
+      "court_width_px" in trackingData
+    ) {
+      const courtLengthPx = (trackingData as { court_length_px: number })
+        .court_length_px;
+      const courtWidthPx = (trackingData as { court_width_px: number })
+        .court_width_px;
+      if (courtLengthPx > 0 && courtWidthPx > 0) {
+        virtualW.current = courtLengthPx;
+        virtualH.current = courtWidthPx;
+      } else {
+        for (const playerFrames of Object.values(playersCoordinates.current)) {
+          // Object.values(playerFrames) akan mengambil semua data koordinat -> [ {x, y}, {x, y}, ... ]
+          for (const point of Object.values(playerFrames)) {
+            // Bandingkan dan perbarui nilai maksimum x dan y
+            if (point.x > virtualW.current) {
+              virtualW.current = point.x;
+            }
+            if (point.y > virtualH.current) {
+              virtualH.current = point.y;
+            }
+          }
+        }
+      }
+      // console.log("virtual Width: ", virtualW.current);
+      // console.log("virtual Height: ", virtualH.current);
+    } else {
+      console.warn(
+        "trackingData tidak memiliki properti 'court_length_px' dan 'court_width_px' yang valid."
+      );
+    }
   };
 
   const getHeatmapData = (playerIds?: string[]) => {
@@ -68,18 +125,17 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
         ? playerIds
         : Object.keys(playersCoordinates.current);
 
-    // console.log("Selected player IDs:", playerIds);
-    let virtualWidth = 0;
-    let virtualHeight = 0;
+    let virtualWidth = virtualW.current;
+    let virtualHeight = virtualH.current;
 
-    selectedIds.forEach((id) => {
-      if (!playersCoordinates.current[id]) return;
+    // selectedIds.forEach((id) => {
+    //   if (!playersCoordinates.current[id]) return;
 
-      playersCoordinates.current[id].forEach((point) => {
-        if (virtualWidth < point.x) virtualWidth = point.x;
-        if (virtualHeight < point.y) virtualHeight = point.y;
-      });
-    });
+    //   playersCoordinates.current[id].forEach((point) => {
+    //     if (virtualWidth < point.x) virtualWidth = point.x;
+    //     if (virtualHeight < point.y) virtualHeight = point.y;
+    //   });
+    // });
 
     const scaleXForPlayer = COURT_WIDTH / virtualWidth;
     const scaleYForPlayer = COURT_HEIGHT / virtualHeight;
@@ -103,8 +159,6 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
     );
 
     finalDataCoordinates.current = { max: maxIntensity, data: heatmapData };
-
-    // console.log("Final heatmap data:", heatmapData);
   };
 
   const initHeatmap = useCallback(async () => {
@@ -138,6 +192,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
           value: point.value,
         })),
       };
+      // console.log("Scaled Data: ", scaledDataPoints);
 
       heatmap.setData(scaledDataPoints);
       // console.log("Heatmap data set:", scaledDataPoints);
@@ -151,21 +206,6 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
   };
 
   useEffect(() => {
-    // Isi koordinat pemain saat mount
-    // Transform array to Record<string, Point[]>
-    playersCoordinates.current = coordinatesData.players.reduce(
-      (
-        acc: Record<string, Point[]>,
-        curr: { player_id: number; x: number; y: number }
-      ) => {
-        const key = String(curr.player_id);
-        if (!acc[key]) acc[key] = [];
-        acc[key].push({ x: curr.x, y: curr.y });
-        return acc;
-      },
-      {}
-    );
-
     // --- ResizeObserver Setup ---
     const containerElement = courtContainerRef.current;
     let resizeObserver: ResizeObserver | null = null;
@@ -191,7 +231,37 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds }) => {
         resizeObserver.unobserve(containerElement);
       }
     };
-  }, [playerIds, initHeatmap]);
+  }, [initHeatmap]);
+
+  useEffect(() => {
+    // Isi koordinat pemain saat mount
+    // Transform array to Record<string, Point[]>
+    if (
+      trackingData &&
+      "players" in trackingData &&
+      Array.isArray(trackingData.players)
+    ) {
+      playersCoordinates.current = trackingData.players.reduce(
+        (
+          acc: Record<string, Point[]>,
+          curr: { player_id: number; x: number; y: number }
+        ) => {
+          const key = String(curr.player_id);
+          if (!acc[key]) acc[key] = [];
+          acc[key].push({ x: curr.x, y: curr.y });
+          return acc;
+        },
+        {}
+      );
+    } else {
+      console.warn(
+        "trackingData tidak memiliki properti 'players' yang valid."
+      );
+      playersCoordinates.current = {};
+    }
+
+    setVirtualCourtSize();
+  }, []);
 
   return (
     <div className="relative w-full" ref={courtContainerRef}>

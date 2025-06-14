@@ -5,18 +5,23 @@ import Shootmap from "./shootMap";
 import HeatMap from "./heatMap";
 import playerData from "../../public/data/analysis.json";
 
+type TrackingData = Record<string, unknown>;
+interface TrackingDataProps {
+  trackingResult: TrackingData | {};
+}
+
 // Tipe untuk konfigurasi pemain yang akan digunakan di UI
 interface PlayerConfig {
   id: string;
   name: string;
 }
 
-const TeamEventCard: React.FC = () => {
+const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
   const playersData = useRef<Record<string, unknown>>({});
   useEffect(() => {
     // Ambil data pemain dari file JSON
-    playersData.current = playerData;
-  }, []);
+    playersData.current = trackingResult;
+  }, [trackingResult]);
 
   const [selectedTeam, setSelectedTeam] = useState<"A" | "B">("A");
   const [teamAPlayerConfig, setTeamAPlayerConfig] = useState<PlayerConfig[]>(
@@ -26,12 +31,8 @@ const TeamEventCard: React.FC = () => {
     []
   );
   // State untuk pilihan pemain
-  const [selectedPlayersTeamA, setSelectedPlayersTeamA] = useState<string[]>(
-    []
-  );
-  const [selectedPlayersTeamB, setSelectedPlayersTeamB] = useState<string[]>(
-    []
-  );
+  const [selectedPlayersTeamA, setSelectedPlayersTeamA] = useState<string>("");
+  const [selectedPlayersTeamB, setSelectedPlayersTeamB] = useState<string>("");
   const [selectedPlayerID, setSelectedPlayerID] = useState<string[]>([]);
 
   // State untuk loading dan error
@@ -94,51 +95,31 @@ const TeamEventCard: React.FC = () => {
   // useEffect untuk mengatur pemain terpilih default SETELAH konfigurasi tim dimuat
   useEffect(() => {
     // Hanya atur jika konfigurasi sudah ada dan pilihan belum diatur (untuk menghindari override pilihan user)
-    if (
-      selectedTeam === "A" &&
-      teamAPlayerConfig.length > 0 &&
-      selectedPlayersTeamA.length === 0
-    ) {
+    if (selectedTeam === "A" && teamAPlayerConfig.length > 0) {
       // Tim A terpilih semua secara default saat tim B aktif dan belum ada pilihan
-      setSelectedPlayersTeamA(teamAPlayerConfig.map((p) => p.id));
-    } else if (
-      selectedTeam === "B" &&
-      teamBPlayerConfig.length > 0 &&
-      selectedPlayersTeamB.length === 0
-    ) {
+      setSelectedPlayersTeamA(teamAPlayerConfig[0].id);
+      setSelectedPlayerID([teamAPlayerConfig[0].id]);
+    } else if (selectedTeam === "B" && teamBPlayerConfig.length > 0) {
       // Tim B terpilih semua secara default saat tim B aktif dan belum ada pilihan
-      setSelectedPlayersTeamB(teamBPlayerConfig.map((p) => p.id));
+      setSelectedPlayersTeamB(teamBPlayerConfig[0].id);
+      setSelectedPlayerID([teamBPlayerConfig[0].id]);
     }
-  }, [
-    selectedTeam,
-    teamAPlayerConfig,
-    teamBPlayerConfig,
-    selectedPlayersTeamA.length,
-    selectedPlayersTeamB.length,
-  ]); // Tambahkan .length agar re-run jika array kosong jadi terisi
+  }, [selectedTeam, teamAPlayerConfig, teamBPlayerConfig]); // Tambahkan .length agar re-run jika array kosong jadi terisi
 
   const togglePlayerSelection = (team: "A" | "B", playerIdToToggle: string) => {
     if (team === "A") {
-      setSelectedPlayersTeamA((prevSelected) =>
-        prevSelected.includes(playerIdToToggle)
-          ? prevSelected.filter((id) => id !== playerIdToToggle)
-          : [...prevSelected, playerIdToToggle]
-      );
+      setSelectedPlayersTeamA(playerIdToToggle);
     } else {
       // team === 'B'
-      setSelectedPlayersTeamB((prevSelected) =>
-        prevSelected.includes(playerIdToToggle)
-          ? prevSelected.filter((id) => id !== playerIdToToggle)
-          : [...prevSelected, playerIdToToggle]
-      );
+      setSelectedPlayersTeamB(playerIdToToggle);
     }
   };
 
   useEffect(() => {
     if (selectedTeam === "A") {
-      setSelectedPlayerID(selectedPlayersTeamA);
+      setSelectedPlayerID([selectedPlayersTeamA]);
     } else {
-      setSelectedPlayerID(selectedPlayersTeamB);
+      setSelectedPlayerID([selectedPlayersTeamB]);
     }
   }, [selectedTeam, selectedPlayersTeamA, selectedPlayersTeamB]);
 
@@ -206,17 +187,26 @@ const TeamEventCard: React.FC = () => {
               {currentPlayerListConfig.map((player) => (
                 <label
                   key={player.id}
-                  className="flex items-center gap-2 text-xs md:text-[14px] max-sm:text-[10px] font-semibold !text-[#667085] cursor-pointer hover:text-[#FD6A2A]"
+                  className="flex items-center gap-2 text-xs md:text-[14px] max-sm:text-[10px] font-semibold !text-[#667085] cursor-pointer"
                 >
                   <input
-                    type="checkbox"
-                    checked={currentSelectedPlayerIds.includes(player.id)}
+                    type="radio"
+                    checked={currentSelectedPlayerIds === player.id}
                     onChange={() =>
                       togglePlayerSelection(selectedTeam, player.id)
                     }
-                    className="form-checkbox h-4 w-4 md:h-5 md:w-5 text-[#FD6A2A] border-gray-300 rounded focus:ring-[#FD6A2A] focus:ring-offset-0"
+                    className="sr-only"
                   />
-                  {player.name}
+                  <div
+                    className={`w-5 h-5 rounded-full border-2 transition-all duration-200 ${
+                      currentSelectedPlayerIds === player.id
+                        ? "border-[#FD6A2A] border-[6px] bg-white"
+                        : "border-gray-400 group-hover:border-[#FD6A2A]"
+                    }`}
+                  ></div>
+                  <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition-colors">
+                    {player.name}
+                  </span>
                 </label>
               ))}
             </div>
@@ -248,7 +238,7 @@ const TeamEventCard: React.FC = () => {
       </div>
 
       {/* Heatmap */}
-      <HeatMap playerIds={selectedPlayerID} />
+      <HeatMap playerIds={selectedPlayerID} trackingData={trackingResult} />
     </div>
   );
 };

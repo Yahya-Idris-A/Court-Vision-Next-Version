@@ -46,6 +46,7 @@ export default function AnalysisCard({
           alt={thumbnail}
           width={250}
           height={120}
+          priority
           className="object-cover w-[250px] max-sm:w-full h-[120px] max-sm:h-full"
         />
       </div>

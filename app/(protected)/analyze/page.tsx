@@ -9,7 +9,7 @@ import * as analyzeService from "@/services/analyzeService";
 
 interface VideoData {
   id: string;
-  thumbnail: string;
+  thumbnail_url: string;
   title: string;
   date: string;
   uploadProgress: number | null;
@@ -227,23 +227,23 @@ const Page = () => {
   const videosRef = useRef(videos);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalItems = sampleData.length;
-  const currentData = sampleData.slice(
+  const totalItems = videos.length;
+  const currentData = videos.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
   const getAllVideos = async () => {
     const rawData = await analyzeService.getAllVideos();
-    console.log("video data: ", rawData);
+    // console.log("video data: ", rawData);
 
     const formattedData: VideoData[] = rawData.map((item) => ({
       id: item.id,
-      thumbnail: "/thumb/thumbnail.jpg", // default
+      thumbnail_url: item.thumbnail_url || "/thumb/thumbnail.jpg",
       title: item.title,
       date: new Date(item.date).toISOString().split("T")[0] ?? "",
       uploadProgress: null, // initial value
-      uploadStatus: item.status, // default
+      uploadStatus: item.status,
       detailAnalysisUrl: `/detail-analyze/${item.id}`,
     }));
 
@@ -304,26 +304,10 @@ const Page = () => {
 
       <div className="flex flex-col items-center justify-start w-full gap-[16px]">
         {/* Video Cards */}
-        {videos.map((item, index) => (
-          <ListVideoCards
-            key={index}
-            thumbnail={item.thumbnail}
-            title={item.title}
-            date={item.date}
-            uploadProgress={item.uploadProgress}
-            uploadStatus={item.uploadStatus}
-            detailAnalysisUrl={item.detailAnalysisUrl}
-          />
-        ))}
-      </div>
-
-      {/* List of Videos */}
-      <div className="flex flex-col items-center justify-start w-full gap-[16px]">
-        {/* Video Cards */}
         {currentData.map((item, index) => (
           <ListVideoCards
             key={index}
-            thumbnail={item.thumbnail}
+            thumbnail={item.thumbnail_url}
             title={item.title}
             date={item.date}
             uploadProgress={item.uploadProgress}
@@ -333,7 +317,7 @@ const Page = () => {
         ))}
       </div>
       {/* Pagination */}
-      {sampleData.length > itemsPerPage && (
+      {videos.length > itemsPerPage && (
         <div className="flex mt-4 w-full justify-end mr-[30px] max-sm:mr-[10px]">
           <Pagination
             currentPage={currentPage}

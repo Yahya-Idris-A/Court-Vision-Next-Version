@@ -16,7 +16,7 @@ export const endPointUploadProgress =
 
 interface RawVideoData {
   id: string;
-  thumbnail: string;
+  thumbnail_url: string;
   title: string;
   date: string;
   uploadProgress: number | null;
@@ -52,6 +52,24 @@ export async function getAllVideoProgress() {
 
   try {
     const res = await axiosAnalyze.get("/api/videos/progress");
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    return null;
+  }
+}
+
+// Retrieves the details of an existing video by its ID.
+export async function getVideoDetail(Id: string) {
+  const id = encodeURIComponent(Id);
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  if (!token) return null;
+
+  axiosAnalyze.defaults.headers.common["Content-Type"] = "application/json";
+  axiosAnalyze.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  try {
+    const res = await axiosAnalyze.get(`/api/videos/${id}`);
     return res.data;
   } catch (err) {
     console.error("Error fetching data:", err);

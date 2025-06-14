@@ -34,8 +34,8 @@ const VideoPlayerCard: React.FC<VideoPlayerCardProps> = ({
             <Image
               src={thumbnail}
               alt="Video Thumbnail"
-              width={0}
-              height={0}
+              width={900}
+              height={500}
               priority
               className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-80"
             />
@@ -52,6 +52,12 @@ const VideoPlayerCard: React.FC<VideoPlayerCardProps> = ({
           />
         )}
       </div>
+      {/* <video
+        ref={videoRef}
+        src="https://minio.nextar.uno/courtvision/uploads/0dfae2a6-5100-4ea4-b018-d2e0efb8a228.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=Xe9a2WZI2iad2CS1r7PF%2F20250614%2Fcentralindia%2Fs3%2Faws4_request&X-Amz-Date=20250614T145146Z&X-Amz-Expires=3600&X-Amz-Signature=31ac27b27d6e34eff32b250ef53d2dfa343d58afcaaa703dead81b794ef1d236&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+        className="w-full h-full object-cover"
+        controls
+      /> */}
     </div>
   );
 };
