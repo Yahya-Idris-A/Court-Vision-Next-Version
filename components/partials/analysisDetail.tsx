@@ -46,8 +46,8 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] max-sm:mt-[16px]">
       {/* Header */}
-      <div className="flex flex-row items-center justify-start w-full p-[20px] bg-white stroke-[#667085] shadow">
-        <p className="text-[18px] text-[#4B465C] font-semibold">
+      <div className="flex flex-row items-center justify-start w-full p-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
+        <p className="text-[18px] text-[var(--MainText)] font-semibold">
           Detailed Analysis
         </p>
       </div>
@@ -56,11 +56,7 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
         <VideoPlayerCard thumbnail={videoThumbnail} videoSrc={videoSource} />
       )}
       {/* Stats */}
-      <TeamStats
-        totalShots={{ home: 10, away: 10 }}
-        threePointers={{ home: 6, away: 5 }}
-        twoPointers={{ home: 4, away: 5 }}
-      />
+      <TeamStats totalShots={{ home: 10, away: 10 }} />
       {/* Event Map */}
       {trackingResult && <EventMap trackingResult={trackingResult} />}
     </div>

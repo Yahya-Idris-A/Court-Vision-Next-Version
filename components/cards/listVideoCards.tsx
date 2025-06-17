@@ -10,6 +10,7 @@ interface AnalysisCardProps {
   thumbnail: string;
   title: string;
   date: string;
+  venue: string;
   uploadProgress: number | null;
   uploadStatus: string;
   detailAnalysisUrl: string;
@@ -19,6 +20,7 @@ export default function AnalysisCard({
   thumbnail,
   title,
   date,
+  venue,
   uploadProgress,
   uploadStatus,
   detailAnalysisUrl,
@@ -38,7 +40,7 @@ export default function AnalysisCard({
   return (
     <Link
       href={detailAnalysisUrl}
-      className="flex flex-row max-sm:flex-col gap-[20px] px-[8px] py-[10px] w-full rounded-[10px] bg-white stroke-[#667085] shadow cursor-pointer"
+      className="flex flex-row max-sm:flex-col gap-[20px] px-[8px] py-[10px] w-full rounded-[10px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow cursor-pointer"
     >
       <div className="flex max-w-[250px] max-sm:max-w-full w-full">
         <Image
@@ -54,53 +56,63 @@ export default function AnalysisCard({
         <div className="flex flex-col w-full gap-[5px]">
           <div className="flex flex-row justify-between gap-[10px] items-end">
             <div className="flex flex-col w-full gap-[1px]">
-              <h2 className="text-black text-[20px] font-semibold">{title}</h2>
-              <p className="text-[15px] text-[#ADADAD] font-semibold">{date}</p>
+              <h2 className="text-[var(--MainText)] text-[20px] font-semibold">
+                {title}
+              </h2>
+              <p className="text-[15px] text-[var(--TextSecondary)] font-semibold">
+                {date} at {venue}
+              </p>
             </div>
             {uploadStatus === "waiting" && (
-              <p className="text-[15px] text-black font-semibold">0%</p>
+              <p className="text-[15px] text-[var(--MainText)] font-semibold">
+                0%
+              </p>
             )}
             {uploadStatus === "processing" && (
-              <p className="text-[15px] text-black font-semibold">
+              <p className="text-[15px] text-[var(--MainText)] font-semibold">
                 {uploadProgress}%
               </p>
             )}
             {uploadStatus === "completed" && (
-              <p className="text-[15px] text-black font-semibold">100%</p>
+              <p className="text-[15px] text-[var(--MainText)] font-semibold">
+                100%
+              </p>
             )}
             {uploadStatus === "failed" && (
-              <p className="text-[15px] text-black font-semibold">0%</p>
+              <p className="text-[15px] text-[var(--MainText)] font-semibold">
+                0%
+              </p>
             )}
           </div>
           {/* Progress Bar */}
           {uploadStatus === "waiting" ? (
             // Indeterminate progress bar (animated)
-            <div className="overflow-hidden rounded-[10px] border-[1px] border-[#403D91] h-[20px] relative bg-white">
-              <div className="absolute top-0 left-0 h-full w-1/3 bg-[#403D91] animate-pulse-indeterminate"></div>
+            <div className="overflow-hidden rounded-[10px] border-[1px] border-[var(--SidebarActive)] h-[20px] relative bg-[var(--SidebarActive)]">
+              <div className="absolute top-0 left-0 h-full w-1/3 bg-[var(--MainButton)] animate-pulse-indeterminate"></div>
             </div>
           ) : uploadStatus === "processing" && uploadProgress !== null ? (
-            <div className="overflow-hidden rounded-[10px] border-[1px] border-[#403D91] h-[20px]">
+            <div className="overflow-hidden rounded-[10px] border-[1px] border-[var(--SidebarActive)] bg-[var(--SidebarActive)] h-[20px]">
               <div
-                className="h-full bg-[#403D91] transition-all duration-500 ease-in-out"
+                className="h-full bg-[var(--MainButton)] transition-all duration-500 ease-in-out"
                 style={{ width: `${uploadProgress}%` }}
               ></div>
             </div>
           ) : uploadStatus === "processing" && uploadProgress === null ? (
             // Indeterminate progress bar (animated)
-            <div className="overflow-hidden rounded-[10px] border-[1px] border-[#403D91] h-[20px] relative bg-white">
-              <div className="absolute top-0 left-0 h-full w-1/3 bg-[#403D91] animate-pulse-indeterminate"></div>
+            <div className="overflow-hidden rounded-[10px] border-[1px] border-[var(--SidebarActive)] h-[20px] relative bg-[var(--SidebarActive)]">
+              <div className="absolute top-0 left-0 h-full w-1/3 bg-[var(--MainButton)] animate-pulse-indeterminate"></div>
             </div>
           ) : uploadStatus === "completed" ? (
-            <div className="overflow-hidden rounded-[10px] border-[1px] border-[#403D91] h-[20px]">
+            <div className="overflow-hidden rounded-[10px] border-[1px] border-[var(--SidebarActive)] bg-[var(--SidebarActive)] h-[20px]">
               <div
-                className="h-full bg-[#403D91] transition-all duration-500 ease-in-out"
+                className="h-full bg-[var(--MainButton)] transition-all duration-500 ease-in-out"
                 style={{ width: `100%` }}
               ></div>
             </div>
           ) : uploadStatus === "failed" ? (
-            <div className="overflow-hidden rounded-[10px] border-[1px] border-[#403D91] h-[20px]">
+            <div className="overflow-hidden rounded-[10px] border-[1px] border-[var(--SidebarActive)] bg-[var(--SidebarActive)] h-[20px]">
               <div
-                className="h-full bg-[#403D91] transition-all duration-500 ease-in-out"
+                className="h-full bg-[var(--MainButton)] transition-all duration-500 ease-in-out"
                 style={{ width: `0%` }}
               ></div>
             </div>
@@ -110,20 +122,24 @@ export default function AnalysisCard({
         <div className="flex flex-row justify-start gap-[5px] items-center">
           {uploadStatus == "waiting" || uploadStatus == "processing" ? (
             <>
-              <Loader2 className="w-[22px] h-[22px] text-[#FD6A2A] animate-spin" />
-              <p className="text-[15px] text-black font-normal">
+              <Loader2 className="w-[22px] h-[22px] text-[var(--MainButton)]] animate-spin" />
+              <p className="text-[15px] text-[var(--MainText)] font-normal">
                 {loadingText}
               </p>
             </>
           ) : uploadStatus === "completed" ? (
             <>
-              <CheckCircle className="w-[22px] h-[22px] text-[#FD6A2A]" />
-              <p className="text-[15px] text-black font-normal">Completed</p>
+              <CheckCircle className="w-[22px] h-[22px] text-[var(--MainButton)]" />
+              <p className="text-[15px] text-[var(--MainText)] font-normal">
+                Completed
+              </p>
             </>
           ) : (
             <>
-              <XCircle className="w-[22px] h-[22px] text-[#FD6A2A]" />
-              <p className="text-[15px] text-black font-normal">Failed</p>
+              <XCircle className="w-[22px] h-[22px] text-[var(--Danger)]" />
+              <p className="text-[15px] text-[var(--MainText)] font-normal">
+                Failed
+              </p>
             </>
           )}
         </div>

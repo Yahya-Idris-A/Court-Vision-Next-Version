@@ -299,24 +299,24 @@ const Page = () => {
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] mr-[20px] max-sm:mt-[16px]">
       {/* Header */}
-      <div className="flex flex-row items-center justify-start w-full p-[20px] bg-white stroke-[#667085] shadow">
-        <p className="text-[18px] text-[#4B465C] font-semibold">
+      <div className="flex flex-row items-center justify-start w-full p-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
+        <p className="text-[18px] text-[var(--MainText)] font-semibold">
           Analyze Your Video
         </p>
       </div>
       {/* Form */}
-      <div className="flex flex-col items-center justify-start w-full p-[32px] bg-white stroke-[#667085] shadow">
+      <div className="flex flex-col items-center justify-start w-full p-[32px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
         <div className="flex flex-col gap-4 w-full">
           <div className="flex items-center rounded py-2 relative">
-            <Pencil className="text-gray-400 mr-2 absolute ml-1" />
+            <Pencil className="text-[var(--TextSecondary)] mr-2 absolute ml-1" />
             <input
               type="text"
-              className="w-full border border-gray-300 rounded px-3 py-2 text-[14px] text-black pl-8"
+              className="w-full border border-[var(--FormDefault)] rounded px-3 py-2 text-[14px] text-[var(--MainText)] pl-8"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
             <label
-              className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-gray-400 transition-transform duration-300 ease-in-out 
+              className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-[var(--TextSecondary)] transition-transform duration-300 ease-in-out 
                   ${title ? "top-[-3px] bg-white" : ""}`}
             >
               Match Title
@@ -325,17 +325,17 @@ const Page = () => {
 
           <div className="flex flex-row max-sm:flex-col w-full gap-[32px] max-sm:gap-4 justify-between">
             <div className="flex items-center rounded py-2 w-full relative">
-              <Calendar className="text-gray-400 mr-2 absolute ml-1" />
+              <Calendar className="text-[var(--TextSecondary)] mr-2 absolute ml-1" />
               <DatePicker
                 selected={date}
                 onChange={(date: Date | null) => setDate(date)}
-                className="w-full border border-gray-300 rounded px-10 py-2 text-[14px] text-black"
+                className="w-full border border-[var(--FormDefault)] rounded px-10 py-2 text-[14px] text-[var(--MainText)]"
                 placeholderText="Match Date"
               />
               <label
                 className={
                   date
-                    ? "top-[-3px] bg-white text-gray-400 absolute left-[40px] text-[14px] px-[5px] pointer-events-none"
+                    ? "top-[-3px] bg-white text-[var(--TextSecondary)] absolute left-[40px] text-[14px] px-[5px] pointer-events-none"
                     : "hidden"
                 }
               >
@@ -344,15 +344,15 @@ const Page = () => {
             </div>
             <div className="flex flex-row w-full gap-[32px] justify-between relative">
               <div className="flex items-center rounded py-2 w-full">
-                <Map className="text-gray-400 mr-2 absolute ml-1" />
+                <Map className="text-[var(--TextSecondary)] mr-2 absolute ml-1" />
                 <input
                   type="tel"
-                  className="w-full border border-gray-300 rounded py-2 text-[14px] text-black pl-8"
+                  className="w-full border border-[var(--FormDefault)] rounded py-2 text-[14px] text-[var(--MainText)] pl-8"
                   value={venue}
                   onChange={(e) => setVenue(e.target.value)}
                 />
                 <label
-                  className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-gray-400 transition-transform duration-300 ease-in-out 
+                  className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-[var(--TextSecondary)] transition-transform duration-300 ease-in-out 
                   ${venue ? "top-[-3px] bg-white" : ""}`}
                 >
                   Match Venue
@@ -367,16 +367,18 @@ const Page = () => {
           <div
             className={classNames(
               "drop-zone border-2 border-dashed rounded-[8px] px-[40px] py-[20px] cursor-pointer mb-[15px] transition-all duration-300 ease-in text-center",
-              isDragging ? "border-[#FD6A2A]" : "border-[#9e9e9e]",
-              "hover:border-[#FD6A2A]"
+              isDragging
+                ? "border-[var(--MainButton)]"
+                : "border-[var(--FormDefault)]",
+              "hover:border-[var(--MainButton)]"
             )}
             onClick={triggerFileInput}
           >
             <div className="flex flex-col justify-center items-center">
               <div className="mb-[10px]">
-                <CloudUpload className="text-[#FD6A2A] w-[80px] h-[80px] max-sm:w-[30px] max-sm:h-[30px]" />
+                <CloudUpload className="text-[var(--MainButton)] w-[80px] h-[80px] max-sm:w-[30px] max-sm:h-[30px]" />
               </div>
-              <p className="text-[#FD6A2A] text-[16px] m-0">
+              <p className="text-[var(--TextSecondary)] text-[16px] m-0">
                 Browse Video or Drag Here to Upload
               </p>
             </div>
@@ -398,18 +400,18 @@ const Page = () => {
             <div className="px-[8px] py-[12px] mb-[15px]">
               <div className="flex flex-row items-center mb-[6px]">
                 <div className="mr-[10px]">
-                  <Video className="text-[#FD6A2A] w-[40px] h-[40px] max-sm:w-[30px] max-sm:h-[30px]" />
+                  <Video className="text-[var(--MainButton)] w-[40px] h-[40px] max-sm:w-[30px] max-sm:h-[30px]" />
                 </div>
-                <span className="grow truncate text-black">
+                <span className="grow truncate text-[var(--MainText)]">
                   {selectedFileRef.current?.name}
                 </span>
-                <span className="ml-[10px] text-[14px] text-black">
+                <span className="ml-[10px] text-[14px] text-[var(--MainText)]">
                   {uploadProgress}%
                 </span>
               </div>
-              <div className="overflow-hidden rounded-[10px] border border-[#403D91] h-[10px]">
+              <div className="overflow-hidden rounded-[10px] bg-[var(--SidebarActive)] border border-[var(--SidebarActive)] h-[10px]">
                 <div
-                  className="bg-[#FD6A2A] h-full transition-all"
+                  className="bg-[var(--MainButton)] h-full transition-all"
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>
@@ -418,7 +420,7 @@ const Page = () => {
 
           {/* Analyze button */}
           <button
-            className="block w-full p-[12px] border-none rounded-[4px] bg-[#FD6A2A] text-[16px] font-medium text-white cursor-pointer disabled:opacity-60"
+            className="block w-full p-[12px] border-none rounded-[4px] bg-[var(--MainButton)] text-[16px] font-medium text-white cursor-pointer disabled:opacity-60"
             disabled={!uploadSuccess}
             onClick={startAnalysis}
           >

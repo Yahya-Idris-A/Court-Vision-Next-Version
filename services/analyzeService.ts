@@ -19,6 +19,7 @@ interface RawVideoData {
   thumbnail_url: string;
   title: string;
   date: string;
+  venue: string;
   uploadProgress: number | null;
   status: string;
   detailAnalysisUrl: string;

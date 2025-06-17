@@ -29,8 +29,8 @@ export default function Sidebar() {
     const isActive = Array.isArray(routeMatch)
       ? routeMatch.some((r) => pathname?.includes(r))
       : pathname?.includes(routeMatch);
-    return `flex flex-row justify-start items-center w-full max-sm:w-fit px-[16px] max-sm:px-[10px] rounded-[6px] py-[8px] cursor-pointer overflow-x-hidden ${
-      isActive ? "bg-[#FD6A2A]" : "bg-white"
+    return `flex flex-row justify-start items-center w-full max-sm:w-fit px-[16px] hover:bg-[var(--SidebarHover)] max-sm:px-[10px] rounded-[6px] py-[8px] cursor-pointer overflow-x-hidden ${
+      isActive ? "bg-[var(--SidebarActive)]" : "bg-transparant"
     }`;
   };
 
@@ -39,7 +39,7 @@ export default function Sidebar() {
       ? routeMatch.some((r) => pathname?.includes(r))
       : pathname?.includes(routeMatch);
     return `w-10 h-10 max-sm:w-5 max-sm:h-5 overflow-visible ${
-      isActive ? "text-white" : "text-[#4B465C]"
+      isActive ? "text-[var(--MainButton)]" : "text-[var(--TextSecondary)]"
     }`;
   };
 
@@ -48,12 +48,12 @@ export default function Sidebar() {
       ? routeMatch.some((r) => pathname?.includes(r))
       : pathname?.includes(routeMatch);
     return `text-[20px] font-normal ml-[8px] max-sm:hidden transition-all duration-300 ease-in-out transform ${
-      isActive ? "text-white" : "text-[#4B465C]"
+      isActive ? "text-[var(--MainButton)]" : "text-[var(--TextSecondary)]"
     } ${isSidebarExpanded ? "opacity-100" : "opacity-0"}`;
   };
   return (
     <div
-      className={`border-r bg-white stroke-[#667085] shadow transition-all duration-300 ease-in-out transform sm:flex h-[100dvh] sticky max-sm:w-[100px] top-0 z-50 ${
+      className={`border-r bg-[var(--CardBackground)] border border-[var(--Border)] shadow transition-all duration-300 ease-in-out transform sm:flex h-[100dvh] sticky max-sm:w-[100px] top-0 z-50 ${
         isSidebarExpanded ? "w-[400px]" : "w-[125px]"
       }`}
     >
@@ -67,11 +67,11 @@ export default function Sidebar() {
                 className={`flex flex-row items-center w-full max-sm:justify-center`}
               >
                 <h5
-                  className={`text-[#4B465C] text-[18px] max-sm:text-[8px] font-bold ${
+                  className={`text-[var(--Logo)] text-[18px] max-sm:text-[8px] font-bold ${
                     isSidebarExpanded ? "mr-[35px] max-sm:mr-0" : "mr-0"
                   }`}
                 >
-                  MENU
+                  COURT VISION
                 </h5>
               </div>
 
@@ -102,12 +102,12 @@ export default function Sidebar() {
         </div>
         {/* Bottom */}
         <div className="bottom-0 mt-auto whitespace-nowrap mb-1 transition duration-200 block">
-          <div className="border border-t-1 mb-3"></div>
+          <div className="border border-t-1 border-[var(--FormDefault)] mb-3"></div>
           {/* Logout */}
           <div className="flex flex-col items-center gap-[20px] w-full px-[18px] max-sm:px-[10px] mb-[10px]">
             <div
               onClick={logout}
-              className="flex flex-row items-center w-full max-sm:w-fit px-[18px] max-sm:px-[10px] cursor-pointer rounded-[6px] bg-[#FD6A2A] py-[8px]"
+              className="flex flex-row items-center w-full max-sm:w-fit px-[18px] max-sm:px-[10px] cursor-pointer rounded-[6px] bg-[var(--Danger)] py-[8px] hover:bg-[var(--DangerHover)] hover:scale-95"
             >
               <LogOut className="w-10 h-10 max-sm:w-5 max-sm:h-5 text-white overflow-visible" />
               <h2
@@ -124,7 +124,7 @@ export default function Sidebar() {
       <div className="relative max-sm:hidden">
         <button
           type="button"
-          className="absolute top-[0px] right-[-25px] flex h-[40px] w-[40px] items-center justify-center rounded-r-2xl bg-white stroke-[#667085] text-black  transition-shadow duration-300 ease-in-out cursor-pointer"
+          className="absolute top-[0px] right-[-25px] flex h-[40px] w-[40px] items-center justify-center rounded-r-2xl bg-[var(--CardBackground)] text-black hover:scale-105 transition-shadow duration-300 ease-in-out cursor-pointer"
           onClick={toggleSidebar}
         >
           {isSidebarExpanded ? (

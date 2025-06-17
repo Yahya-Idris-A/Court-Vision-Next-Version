@@ -132,7 +132,7 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-xl">Memuat data tim...</p>
+        <p className="text-xl text-[var(--Maintext)]">Memuat data tim...</p>
       </div>
     );
   }
@@ -140,23 +140,23 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
   if (error) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-xl text-red-500">Error: {error}</p>
+        <p className="text-xl text-[var(--Danger)]">Error: {error}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-start w-full p-[20px] gap-[16px] bg-white stroke-[#667085] shadow">
+    <div className="flex flex-col items-center justify-start w-full p-[20px] gap-[16px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
       {/* Team Select */}
       <div className="flex flex-row gap-4 md:gap-[50px] justify-center items-center w-full">
         <button
           onClick={() => setSelectedTeam("A")}
           disabled={isLoading}
-          className={`text-xl md:text-[32px] max-sm:text-[16px] text-white font-semibold py-2 px-6 md:py-[10px] md:px-[40px] max-sm:px-[20px] rounded-[40px] transition-colors duration-200 ease-in-out cursor-pointer
+          className={`text-xl md:text-[32px] max-sm:text-[16px font-semibold py-2 px-6 md:py-[10px] md:px-[40px] max-sm:px-[20px] rounded-[40px] transition-colors duration-200 ease-in-out cursor-pointer
             ${
               selectedTeam === "A"
-                ? "bg-[#FD6A2A]"
-                : "bg-gray-400 hover:bg-gray-500"
+                ? "bg-[var(--SidebarActive)] text-[var(--MainButton)]"
+                : "border border-[var(--FormDefault)] text-[var(--TextSecondary)] hover:bg-[var(--SidebarActive)]"
             }
             ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
         >
@@ -165,11 +165,11 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
         <button
           onClick={() => setSelectedTeam("B")}
           disabled={isLoading}
-          className={`text-xl md:text-[32px] max-sm:text-[16px] text-white font-semibold py-2 px-6 md:py-[10px] md:px-[40px] max-sm:px-[20px] rounded-[40px] transition-colors duration-200 ease-in-out cursor-pointer
+          className={`text-xl md:text-[32px] max-sm:text-[16px] font-semibold py-2 px-6 md:py-[10px] md:px-[40px] max-sm:px-[20px] rounded-[40px] transition-colors duration-200 ease-in-out cursor-pointer
             ${
               selectedTeam === "B"
-                ? "bg-[#FD6A2A]"
-                : "bg-gray-400 hover:bg-gray-500"
+                ? "bg-[var(--SidebarActive)] text-[var(--MainButton)]"
+                : "border border-[var(--FormDefault)] text-[var(--TextSecondary)] hover:bg-[var(--SidebarActive)]"
             }
             ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
         >
@@ -179,7 +179,7 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
       {/* Pemilihan Pemain */}
       <div className="flex flex-col gap-[30px] max-sm:gap-[15px] justify-start w-full px-2">
         <div className="flex flex-col gap-[15px] max-sm:gap-[8px] justify-start w-full">
-          <h1 className="text-lg md:text-[24px] max-sm:text-[14px] text-[#4B465C] font-semibold">
+          <h1 className="text-lg md:text-[24px] max-sm:text-[14px] text-[var(--MainText)] font-semibold">
             {selectedTeam === "A" ? "Team A Players" : "Team B Players"}
           </h1>
           {currentPlayerListConfig.length > 0 ? (
@@ -187,7 +187,7 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
               {currentPlayerListConfig.map((player) => (
                 <label
                   key={player.id}
-                  className="flex items-center gap-2 text-xs md:text-[14px] max-sm:text-[10px] font-semibold !text-[#667085] cursor-pointer"
+                  className="flex items-center gap-2 text-xs md:text-[14px] max-sm:text-[10px] font-semibold !text-[var(--TextSecondary)] cursor-pointer"
                 >
                   <input
                     type="radio"
@@ -200,11 +200,11 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
                   <div
                     className={`w-5 h-5 rounded-full border-2 transition-all duration-200 ${
                       currentSelectedPlayerIds === player.id
-                        ? "border-[#FD6A2A] border-[6px] bg-white"
-                        : "border-gray-400 group-hover:border-[#FD6A2A]"
+                        ? "border-[var(--MainButton)] border-[6px] bg-white"
+                        : "border-[var(--FormDefault)] hover:border-[var(--SidebarActive)]"
                     }`}
                   ></div>
-                  <span className="ml-3 text-gray-700 group-hover:text-gray-900 transition-colors">
+                  <span className="ml-3 text-[var(--TextSecondary)] transition-colors">
                     {player.name}
                   </span>
                 </label>
@@ -219,8 +219,8 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
       </div>
       {/* Shotmap Header */}
       <div className="flex flex-row gap-[10px] justify-start items-center w-full">
-        <LocateFixed className="!text-[30px] !text-[#667085] max-sm:!text-[20px]" />
-        <p className="text-[15px] max-sm:text-[10px] text-[#667085] font-semibold">
+        <LocateFixed className="!text-[30px] !text-[var(--MainText)] max-sm:!text-[20px]" />
+        <p className="text-[15px] max-sm:text-[10px] text-[var(--MainText)] font-semibold">
           {selectedTeam === "A" ? "Team A" : "Team B"} Event Shotmap
         </p>
       </div>
@@ -231,8 +231,8 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
 
       {/* Heatmap Header */}
       <div className="flex flex-row gap-[10px] justify-start items-center w-full">
-        <LocateFixed className="!text-[30px] !text-[#667085] max-sm:!text-[20px]" />
-        <p className="text-[15px] max-sm:text-[10px] text-[#667085] font-semibold">
+        <LocateFixed className="!text-[30px] !text-[var(--MainText)] max-sm:!text-[20px]" />
+        <p className="text-[15px] max-sm:text-[10px] text-[var(--MainText)] font-semibold">
           {selectedTeam === "A" ? "Team A" : "Team B"} Event Heatmap
         </p>
       </div>

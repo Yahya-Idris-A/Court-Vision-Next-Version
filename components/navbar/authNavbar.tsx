@@ -32,7 +32,7 @@ export default function AuthNavbar() {
   }, []);
 
   return (
-    <div className="flex flex-row items-center justify-end max-sm:justify-center bg-white shadow gap-[8px] w-full rounded-[6px] stroke-[#667085]">
+    <div className="flex flex-row items-center justify-end max-sm:justify-center bg-[var(--CardBackground)] border border-[var(--Border)] shadow gap-[8px] w-full rounded-[6px]">
       {isLoadingUserData ? (
         // Skeleton Loader
         <div
@@ -58,7 +58,7 @@ export default function AuthNavbar() {
           />
         )
       )}
-      <p className="text-[15px] text-[#4B465C] font-normal ml-[8px] mr-[32px] max-sm:mr-0">
+      <p className="text-[15px] text-[var(--MainText)] font-normal ml-[8px] mr-[32px] max-sm:mr-0">
         {userData?.name || "Loading..."}
       </p>
     </div>

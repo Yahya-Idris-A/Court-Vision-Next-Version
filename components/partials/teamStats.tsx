@@ -6,14 +6,6 @@ interface MatchStatsCardProps {
     home: number;
     away: number;
   };
-  threePointers: {
-    home: number;
-    away: number;
-  };
-  twoPointers: {
-    home: number;
-    away: number;
-  };
 }
 
 const getPercentage = (home: number, away: number) => {
@@ -52,19 +44,19 @@ const StatRow = ({
   return (
     <div className="flex flex-col w-full justify-center items-center">
       <div className="flex flex-row justify-between w-full">
-        <p className="text-[36px] max-sm:text-[20px] text-[#4B465C] font-semibold">
+        <p className="text-[36px] max-sm:text-[20px] text-[var(--MainText)] font-semibold">
           {homeValue}
         </p>
-        <h1 className="text-[36px] max-sm:text-[20px] text-[#4B465C] font-semibold">
+        <h1 className="text-[36px] max-sm:text-[20px] text-[var(--MainText)] font-semibold">
           {title}
         </h1>
-        <p className="text-[36px] max-sm:text-[20px] text-[#4B465C] font-semibold">
+        <p className="text-[36px] max-sm:text-[20px] text-[var(--MainText)] font-semibold">
           {awayValue}
         </p>
       </div>
-      <div className="overflow-hidden rounded-[10px] bg-[#403D91] h-[20px] w-full">
+      <div className="overflow-hidden rounded-[10px] bg-[var(--MainButton)] h-[20px] w-full">
         <div
-          className="h-full bg-[#FD6A2A] transition-all duration-300"
+          className="h-full bg-[var(--MainOrange)] transition-all duration-300"
           style={{ width: `${percent}%` }}
         />
       </div>
@@ -72,11 +64,7 @@ const StatRow = ({
   );
 };
 
-const MatchStatsCard: React.FC<MatchStatsCardProps> = ({
-  totalShots,
-  threePointers,
-  twoPointers,
-}) => {
+const MatchStatsCard: React.FC<MatchStatsCardProps> = ({ totalShots }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -87,33 +75,21 @@ const MatchStatsCard: React.FC<MatchStatsCardProps> = ({
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-start w-full p-[20px] gap-[20px] bg-white stroke-[#667085] shadow">
+    <div className="flex flex-col items-center justify-start w-full p-[20px] gap-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
       {/* Team Logos and VS */}
       <div className="flex flex-row gap-[50px] justify-center items-center">
         <div className="flex flex-row items-center justify-end">
-          {/* <Image
-            src={homeLogo}
-            alt="Home Team Logo"
-            width={120}
-            height={120}
-            className="max-sm:w-[60px] max-sm:h-[60px]"
-          /> */}
-          <p className="text-[30px] max-sm:text-[24px] text-[#4B465C] font-semibold">
+          <p className="text-[30px] max-sm:text-[24px] text-[var(--MainText)] font-semibold">
             Team A
           </p>
         </div>
-        <h1 className="text-[36px] max-sm:text-[24px] text-[#4B465C] font-semibold">
+        <h1 className="text-[36px] max-sm:text-[24px] text-[var(--MainText)] font-semibold">
           VS
         </h1>
         <div className="flex flex-row items-center justify-start">
-          {/* <Image
-            src={awayLogo}
-            alt="Away Team Logo"
-            width={120}
-            height={120}
-            className="max-sm:w-[60px] max-sm:h-[60px]"
-          /> */}
-          <p className="text-[30px] text-[#4B465C] font-semibold">Team B</p>
+          <p className="text-[30px] text-[var(--MainText)] font-semibold">
+            Team B
+          </p>
         </div>
       </div>
 
@@ -122,18 +98,6 @@ const MatchStatsCard: React.FC<MatchStatsCardProps> = ({
         title="Total Shots"
         homeValue={totalShots.home}
         awayValue={totalShots.away}
-        isLoading={isLoading}
-      />
-      <StatRow
-        title="3 Pointers"
-        homeValue={threePointers.home}
-        awayValue={threePointers.away}
-        isLoading={isLoading}
-      />
-      <StatRow
-        title="2 Pointers"
-        homeValue={twoPointers.home}
-        awayValue={twoPointers.away}
         isLoading={isLoading}
       />
     </div>

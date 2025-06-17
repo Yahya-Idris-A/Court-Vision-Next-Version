@@ -223,11 +223,13 @@ const Page = () => {
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] mr-[20px] max-sm:mt-[16px]">
       {/* Header */}
-      <div className="flex flex-row items-center justify-start w-full p-[20px] bg-white stroke-[#667085] shadow">
-        <p className="text-[18px] text-[#4B465C] font-semibold">My Profile</p>
+      <div className="flex flex-row items-center justify-start w-full p-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
+        <p className="text-[18px] text-[var(--MainText)] font-semibold">
+          My Profile
+        </p>
       </div>
       {/* Form */}
-      <div className="flex flex-col items-center justify-start w-full p-[32px] bg-white stroke-[#667085] shadow">
+      <div className="flex flex-col items-center justify-start w-full p-[32px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
         {/* <FormProfile /> */}
         <div className="flex flex-col items-center w-full p-4">
           {isLoadingUserData ? (
@@ -260,16 +262,21 @@ const Page = () => {
           <div
             className={classNames(
               "drop-zone border-2 border-dashed rounded-[8px] px-[40px] py-[20px] w-full cursor-pointer mb-[15px] transition-all duration-300 ease-in text-center",
-              isDragging ? "border-[#FD6A2A]" : "border-[#9e9e9e]",
-              "hover:border-[#FD6A2A]"
+              isDragging
+                ? "border-[var(--MainButton)]"
+                : "border-[var(--FormDefault)]",
+              "hover:border-[var(--MainButton)]"
             )}
             onClick={triggerFileInput}
           >
             <div className="flex flex-col justify-center items-center">
               <div className="mb-[10px]">
-                <ImagePlus size={50} className="text-[#FD6A2A] text-[40px]" />
+                <ImagePlus
+                  size={50}
+                  className="text-[var(--MainButton)] text-[40px]"
+                />
               </div>
-              <p className="!text-[#FD6A2A] !text-[16px] m-0">
+              <p className="!text-[var(--TextSecondary)] !text-[16px] m-0">
                 Browse Image or Drag Here to Upload
               </p>
             </div>
@@ -289,18 +296,18 @@ const Page = () => {
             <div className="px-[8px] py-[12px] mb-[15px] w-full">
               <div className="flex flex-row items-center mb-[6px]">
                 <div className="mr-[10px]">
-                  <ImagePlus className="text-[#FD6A2A] w-[40px] h-[40px] max-sm:w-[30px] max-sm:h-[30px]" />
+                  <ImagePlus className="text-[var(--MainButton)] w-[40px] h-[40px] max-sm:w-[30px] max-sm:h-[30px]" />
                 </div>
-                <span className="grow truncate text-left text-black">
+                <span className="grow truncate text-left text-[var(--MainText)]">
                   {selectedFileRef.current?.name}
                 </span>
-                <span className="ml-[10px] text-[14px] text-black">
+                <span className="ml-[10px] text-[14px] text-[var(--MainText)]">
                   {uploadProgress}%
                 </span>
               </div>
-              <div className="overflow-hidden rounded-[10px] border border-[#403D91] h-[10px]">
+              <div className="overflow-hidden rounded-[10px] bg-[var(--SidebarActive)] border border-[var(--SidebarActive)] h-[10px]">
                 <div
-                  className="bg-[#FD6A2A] h-full transition-all"
+                  className="bg-[var(--MainButton)] h-full transition-all"
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>
@@ -309,15 +316,15 @@ const Page = () => {
 
           <div className="flex flex-col gap-4 w-full">
             <div className="flex items-center rounded py-2 relative">
-              <User className="text-gray-400 mr-2 absolute ml-1" />
+              <User className="text-[var(--TextSecondary)] mr-2 absolute ml-1" />
               <input
                 type="text"
-                className="w-full border border-gray-300 rounded px-3 py-2 text-[14px] text-black pl-8"
+                className="w-full border border-[var(--FormDefault)] rounded px-3 py-2 text-[14px] text-[var(--MainText)] pl-8"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
               />
               <label
-                className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-gray-400 transition-transform duration-300 ease-in-out 
+                className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-[var(--TextSecondary)] transition-transform duration-300 ease-in-out 
                   ${userName ? "top-[-3px] bg-white" : ""}`}
               >
                 Username
@@ -325,15 +332,15 @@ const Page = () => {
             </div>
 
             <div className="flex items-center rounded py-2 relative">
-              <Mail className="text-gray-400 mr-2 absolute ml-1" />
+              <Mail className="text-[var(--TextSecondary)] mr-2 absolute ml-1" />
               <input
                 type="email"
-                className="w-full border border-gray-300 rounded px-3 py-2 text-[14px] text-black pl-8"
+                className="w-full border border-[var(--FormDefault)] rounded px-3 py-2 text-[14px] text-[var(--MainText)] pl-8"
                 value={userEmail}
                 onChange={(e) => setUserEmail(e.target.value)}
               />
               <label
-                className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-gray-400 transition-transform duration-300 ease-in-out 
+                className={`placeholder absolute left-[40px] text-[14px] px-[5px] pointer-events-none text-[var(--TextSecondary)] transition-transform duration-300 ease-in-out 
                   ${userEmail ? "top-[-3px] bg-white" : ""}`}
               >
                 Email
@@ -343,7 +350,7 @@ const Page = () => {
 
           <div className="flex justify-end w-full mt-5">
             <button
-              className="bg-orange-500 text-white px-6 py-2 rounded-[8px] flex items-center max-sm:w-full max-sm:justify-center"
+              className="bg-[var(--MainButton)] text-white px-[50px] py-2 rounded-[8px] flex items-center max-sm:w-full max-sm:justify-center"
               onClick={handleSave}
             >
               <Save className="mr-2" />

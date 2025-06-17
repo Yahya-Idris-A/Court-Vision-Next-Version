@@ -1,8 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --MainBackground: #f5f5f7;
+  --CardBackground: #ffffff;
+  --MainText: #111827;
+  --TextSecondary: #6b7280;
+  --MainButton: #007aff;
+  --ButtonHover: #005ecc;
+  --Border: #eaeaeb;
+  --FormDefault: #d1d1d6;
+  --FormFocus: #007aff;
+  --Danger: #ff3b30;
+  --DangerHover: #d9261a;
+  --SidebarActive: #e5f2ff;
+  --SidebarHover: #f5f5f7;
+  --White: #ffffff;
+  --Logo: #fd6a2a;
+  --MainOrange: #ff9500;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,12 +49,12 @@ body {
 input:focus + .placeholder {
   top: -3px;
   background-color: #fff;
-  color: #fd6a2a;
+  color: var(--FormFocus);
 }
 
 input:focus {
   outline: none;
-  border: 1px solid #fd6a2a;
+  border: 1px solid var(--FormFocus);
 }
 
 /* Animasi Progress Bar */

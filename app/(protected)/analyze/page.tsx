@@ -12,6 +12,7 @@ interface VideoData {
   thumbnail_url: string;
   title: string;
   date: string;
+  venue: string;
   uploadProgress: number | null;
   uploadStatus: string;
   detailAnalysisUrl: string;
@@ -242,6 +243,7 @@ const Page = () => {
       thumbnail_url: item.thumbnail_url || "/thumb/thumbnail.jpg",
       title: item.title,
       date: new Date(item.date).toISOString().split("T")[0] ?? "",
+      venue: item.venue,
       uploadProgress: null, // initial value
       uploadStatus: item.status,
       detailAnalysisUrl: `/detail-analyze/${item.id}`,
@@ -296,8 +298,8 @@ const Page = () => {
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] mr-[20px] max-sm:mt-[16px]">
       {/* Header */}
-      <div className="flex flex-row items-center justify-start w-full p-[20px] bg-white stroke-[#667085] shadow">
-        <p className="text-[18px] text-[#4B465C] font-semibold">
+      <div className="flex flex-row items-center justify-start w-full p-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
+        <p className="text-[18px] text-[var(--MainText)] font-semibold">
           List of Videos
         </p>
       </div>
@@ -310,6 +312,7 @@ const Page = () => {
             thumbnail={item.thumbnail_url}
             title={item.title}
             date={item.date}
+            venue={item.venue}
             uploadProgress={item.uploadProgress}
             uploadStatus={item.uploadStatus}
             detailAnalysisUrl={item.detailAnalysisUrl}

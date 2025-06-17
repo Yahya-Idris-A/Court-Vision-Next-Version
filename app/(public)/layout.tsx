@@ -8,9 +8,9 @@ export default function PublicLayout({
 }>) {
   return (
     <div className="min-h-[100dvh] responsiveFooter">
-      <BasicNavbar />
+      {/* <BasicNavbar /> */}
       {children}
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
