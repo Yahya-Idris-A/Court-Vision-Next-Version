@@ -1,4 +1,3 @@
-import * as analyzeServices from "@/services/analyzeService";
 import AnalysisDetail from "@/components/partials/analysisDetail";
 
 export default async function DetailAnalysisPage({

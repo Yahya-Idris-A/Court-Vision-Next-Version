@@ -40,23 +40,15 @@ export default function AuthNavbar() {
           aria-label="Memuat gambar profil..." // Untuk aksesibilitas
         ></div>
       ) : (
-        userData?.photo_url && (
-          <Image
-            width={50}
-            height={50}
-            src={userData?.photo_url || "/user/user.svg"}
-            alt="Foto Profil"
-            className="size-[50px] my-[6px] rounded-full object-cover"
-            // Opsional: Tambahkan key untuk memaksa re-render jika src berubah dari/ke default
-            key={userData?.photo_url || "/user/user.svg"}
-            // Fallback jika URL gambar dari API error (misal broken link)
-            onError={() => {
-              if (userData.photo_url !== "/user/user.svg") {
-                userData.photo_url = "/user/user.svg";
-              }
-            }}
-          />
-        )
+        <Image
+          width={50}
+          height={50}
+          src={userData?.photo_url || "/user/user.svg"}
+          alt="Foto Profil"
+          className="size-[50px] my-[6px] rounded-full object-cover"
+          // Opsional: Tambahkan key untuk memaksa re-render jika src berubah dari/ke default
+          key={userData?.photo_url || "/user/user.svg"}
+        />
       )}
       <p className="text-[15px] text-[var(--MainText)] font-normal ml-[8px] mr-[32px] max-sm:mr-0">
         {userData?.name || "Loading..."}

@@ -14,12 +14,6 @@ export interface UserData {
   photo_url: string;
 }
 
-interface UserResponse {
-  data: {
-    user: UserData;
-  };
-}
-
 // login
 export const signin = (data: AuthPayload) => {
   return axiosIns.post("/api/auth/signin", data);

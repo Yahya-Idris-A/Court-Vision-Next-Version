@@ -5,6 +5,7 @@ import AuthenticationCard from "@/components/cards/authentication";
 import Carousel from "@/components/partials/carousel";
 import { Eye, EyeOff } from "lucide-react";
 import * as authService from "@/services/authServices";
+import { callToaster } from "@/lib/toaster";
 
 const slides = [
   { src: "/carousel/Content-1.png", alt: "Slide 1" },
@@ -26,19 +27,22 @@ const SignIn: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    try {
-      const response = await authService.signin(userData);
-      console.log("Login Success:", response);
+    if (userData.email && userData.password) {
+      setIsLoading(true);
+      try {
+        const response = await authService.signin(userData);
+        callToaster("success", "Login Success");
 
-      localStorage.setItem("token", response.data.token);
-      console.log("Token:", response.data.token);
-      window.location.href = "/user";
-    } catch (error) {
-      console.error("Login failed:", error);
-      alert("Login gagal. Cek email atau password!");
-    } finally {
-      setIsLoading(false);
+        localStorage.setItem("token", response.data.token);
+        window.location.href = "/user";
+      } catch (error) {
+        console.error("Login failed:", error);
+        callToaster("error", "Login Failed");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      callToaster("default", "Email and password must fill");
     }
   };
 

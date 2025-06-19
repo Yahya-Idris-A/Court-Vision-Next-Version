@@ -10,6 +10,7 @@ import {
   ClipboardCheck,
   LogOut,
 } from "lucide-react";
+import { callToaster } from "@/lib/toaster";
 import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
@@ -22,7 +23,8 @@ export default function Sidebar() {
 
   const logout = () => {
     localStorage.clear();
-    window.location.href = "/home";
+    callToaster("success", "Logout Success");
+    window.location.href = "/sign-in";
   };
 
   const linkClasses = (routeMatch: string | string[]) => {

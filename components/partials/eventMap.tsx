@@ -3,11 +3,10 @@ import { useState, useRef, useEffect } from "react";
 import { LocateFixed } from "lucide-react";
 import Shootmap from "./shootMap";
 import HeatMap from "./heatMap";
-import playerData from "../../public/data/analysis.json";
 
 type TrackingData = Record<string, unknown>;
 interface TrackingDataProps {
-  trackingResult: TrackingData | {};
+  trackingResult: TrackingData;
 }
 
 // Tipe untuk konfigurasi pemain yang akan digunakan di UI

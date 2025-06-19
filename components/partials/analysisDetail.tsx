@@ -42,7 +42,7 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
 
   useEffect(() => {
     getAnalysisData();
-  }, []);
+  }, [getAnalysisData]);
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] max-sm:mt-[16px]">
       {/* Header */}

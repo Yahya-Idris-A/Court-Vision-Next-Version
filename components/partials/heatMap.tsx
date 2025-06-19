@@ -1,5 +1,4 @@
 import { useEffect, useRef, useMemo } from "react";
-import coordinatesData from "../../public/data/analysis.json";
 import Image from "next/image";
 import { useCallback } from "react";
 import { useBreakpoint } from "@/lib/useBreakpoints";
@@ -8,7 +7,7 @@ type TrackingData = Record<string, unknown>;
 
 type HeatMapProps = {
   playerIds: string[];
-  trackingData: TrackingData | {};
+  trackingData: TrackingData;
 };
 
 interface Point {
@@ -125,17 +124,8 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
         ? playerIds
         : Object.keys(playersCoordinates.current);
 
-    let virtualWidth = virtualW.current;
-    let virtualHeight = virtualH.current;
-
-    // selectedIds.forEach((id) => {
-    //   if (!playersCoordinates.current[id]) return;
-
-    //   playersCoordinates.current[id].forEach((point) => {
-    //     if (virtualWidth < point.x) virtualWidth = point.x;
-    //     if (virtualHeight < point.y) virtualHeight = point.y;
-    //   });
-    // });
+    const virtualWidth = virtualW.current;
+    const virtualHeight = virtualH.current;
 
     const scaleXForPlayer = COURT_WIDTH / virtualWidth;
     const scaleYForPlayer = COURT_HEIGHT / virtualHeight;
@@ -199,7 +189,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
     } catch (error) {
       console.error("Error initializing heatmap:", error);
     }
-  }, [playerIds]);
+  }, [playerIds, heatmapRadius]);
 
   const handleImageLoad = () => {
     setTimeout(initHeatmap, 100);
@@ -261,17 +251,10 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
     }
 
     setVirtualCourtSize();
-  }, []);
+  }, [setVirtualCourtSize]);
 
   return (
     <div className="relative w-full" ref={courtContainerRef}>
-      {/* <img
-        ref={courtImageRef}
-        src="/court/bg-court.svg"
-        alt="Basketball Court"
-        className="w-full"
-        onLoad={handleImageLoad}
-      /> */}
       <Image
         src="/court/bg-court.svg"
         alt="Basketball Court"
