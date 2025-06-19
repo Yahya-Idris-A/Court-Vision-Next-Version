@@ -55,7 +55,7 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div className="mx-[80px] py-[120px] h-[100dvh] flex items-center">
+    <div className="mx-[80px] max-lg:mx-[20px] py-[120px] max-lg:py-[30px] h-[100dvh] flex items-center">
       <AuthenticationCard
         authType="Create an Account"
         carouselSlot={<Carousel slides={slides} />}
@@ -138,8 +138,8 @@ const SignUp: React.FC = () => {
           </form>
         }
         authChoiceSlot={
-          <div className="flex flex-col w-full items-start">
-            <span className="text-[var(--TextSecondary)] text-[18px] font-medium">
+          <div className="flex flex-col w-full max-xl:items-center items-start max-xl:mb-[20px]">
+            <span className="text-[var(--TextSecondary)] text-[18px] max-lg:text-[12px] font-medium">
               Already have an account?{" "}
               <a
                 href="/sign-in"

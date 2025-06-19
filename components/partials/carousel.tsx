@@ -54,8 +54,10 @@ export default function Carousel({ slides }: CarouselProps) {
               <div
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-2 h-2 rounded-full cursor-pointer ${
-                  currentSlide === index ? "bg-[#fd6a2a]" : "bg-white/50"
+                className={`w-14 h-2 rounded-full cursor-pointer ${
+                  currentSlide === index
+                    ? "bg-[var(--MainButton)]"
+                    : "bg-[var(--TextSecondary)]"
                 }`}
               />
             ))}

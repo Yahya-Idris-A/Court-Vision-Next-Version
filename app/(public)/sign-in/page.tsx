@@ -47,14 +47,14 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="mx-[80px] py-[120px] h-[100dvh] flex items-center">
+    <div className="mx-[80px] max-lg:mx-[20px] py-[120px] max-lg:py-[30px] h-[100dvh] flex items-center">
       <AuthenticationCard
         authType="Welcome Back!"
         carouselSlot={<Carousel slides={slides} />}
         formSlot={
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col justify-center w-full gap-[40px]"
+            className="flex flex-col justify-center w-full gap-[40px] max-lg:gap-[20px]"
           >
             <input
               className="border border-[var(--FormDefault)] rounded px-3 py-2 h-[60px] text-[24px] text-[var(--MainText)]"
@@ -100,9 +100,9 @@ const SignIn: React.FC = () => {
           </form>
         }
         authChoiceSlot={
-          <div className="flex flex-col w-full items-start">
-            <span className="text-[var(--TextSecondary)] text-[18px] font-medium">
-              Don&apos;t have an account?
+          <div className="flex flex-col w-full max-xl:items-center items-start max-xl:mb-[20px]">
+            <span className="text-[var(--TextSecondary)] text-[18px] max-lg:text-[12px] font-medium">
+              Don&apos;t have an account?{" "}
               <a
                 href="/sign-up"
                 className="text-[var(--MainButton)] hover:underline"
