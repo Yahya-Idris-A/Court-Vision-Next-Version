@@ -86,7 +86,7 @@ const SignIn: React.FC = () => {
             </div>
             <button
               type="submit"
-              className="bg-[var(--MainButton)] py-[12px] rounded-[8px] text-white text-[16px] font-semibold cursor-pointer"
+              className="bg-[var(--MainButton)] hover:bg-[var(--ButtonHover)] py-[12px] rounded-[8px] text-white text-[16px] font-semibold cursor-pointer"
               disabled={isLoading}
             >
               {isLoading ? (
