@@ -214,6 +214,7 @@ const Page = () => {
       callToaster("success", "User Update Success");
     } catch (error) {
       callToaster("error", "User Update Failed");
+      console.error(error);
     }
   };
   return (

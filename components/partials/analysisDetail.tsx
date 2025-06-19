@@ -17,32 +17,32 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
   const [trackingResult, setTrackingResult] = useState<TrackingData | null>(
     null
   );
-  const getAnalysisData = async () => {
-    try {
-      const data = await analyzeServices.getVideoDetail(id);
-      setVideoThumbnail(data?.video.thumbnail_url || "");
-      setVideoSource(data?.video.video_result || "");
-      const jsonDownloadUrl = data?.video.tracking_result || "";
-      try {
-        const response = await fetch(jsonDownloadUrl);
-        if (!response.ok) {
-          throw new Error(`Gagal mengambil data: ${response.status}`);
-        }
-        const jsonText = await response.text();
-        const data: TrackingData = JSON.parse(jsonText);
-        setTrackingResult(data);
-      } catch (error) {
-        console.error(error);
-      }
-      console.log(data.video.shot_result);
-    } catch (error) {
-      console.error("Gagal mengambil data analisis:", error);
-    }
-  };
 
   useEffect(() => {
+    const getAnalysisData = async () => {
+      try {
+        const data = await analyzeServices.getVideoDetail(id);
+        setVideoThumbnail(data?.video.thumbnail_url || "");
+        setVideoSource(data?.video.video_result || "");
+        const jsonDownloadUrl = data?.video.tracking_result || "";
+        try {
+          const response = await fetch(jsonDownloadUrl);
+          if (!response.ok) {
+            throw new Error(`Gagal mengambil data: ${response.status}`);
+          }
+          const jsonText = await response.text();
+          const data: TrackingData = JSON.parse(jsonText);
+          setTrackingResult(data);
+        } catch (error) {
+          console.error(error);
+        }
+        console.log(data.video.shot_result);
+      } catch (error) {
+        console.error("Gagal mengambil data analisis:", error);
+      }
+    };
     getAnalysisData();
-  }, [getAnalysisData]);
+  }, []);
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] max-sm:mt-[16px]">
       {/* Header */}

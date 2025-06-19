@@ -251,7 +251,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
     }
 
     setVirtualCourtSize();
-  }, [setVirtualCourtSize]);
+  }, [setVirtualCourtSize, trackingData]);
 
   return (
     <div className="relative w-full" ref={courtContainerRef}>
