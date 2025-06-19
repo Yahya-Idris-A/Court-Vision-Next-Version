@@ -45,6 +45,7 @@ export default function AuthNavbar() {
           height={50}
           src={userData?.photo_url || "/user/user.svg"}
           alt="Foto Profil"
+          priority
           className="size-[50px] my-[6px] rounded-full object-cover"
           // Opsional: Tambahkan key untuk memaksa re-render jika src berubah dari/ke default
           key={userData?.photo_url || "/user/user.svg"}

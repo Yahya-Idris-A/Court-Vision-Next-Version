@@ -5,6 +5,7 @@ import AuthenticationCard from "@/components/cards/authentication";
 import Carousel from "@/components/partials/carousel";
 import { Eye, EyeOff } from "lucide-react";
 import * as authService from "@/services/authServices";
+import { callToaster } from "@/lib/toaster";
 
 const slides = [
   { src: "/carousel/Content-1.png", alt: "Slide 1" },
@@ -34,7 +35,7 @@ const SignUp: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     if (userData.password !== confirmPassword) {
-      alert("Password tidak cocok!");
+      callToaster("error", "Password oes not match");
       setIsLoading(false);
       return;
     } else {
@@ -44,10 +45,11 @@ const SignUp: React.FC = () => {
 
         localStorage.setItem("token", response.data.token);
         console.log("Token:", response.data.token);
+        callToaster("success", "Create Account Success");
         window.location.href = "/user";
       } catch (error) {
         console.error("Sign Up failed:", error);
-        alert("Sign Up gagal. Cek email atau password!");
+        callToaster("error", "Create Account Failed");
       } finally {
         setIsLoading(false);
       }

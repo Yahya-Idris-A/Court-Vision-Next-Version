@@ -62,14 +62,14 @@ export default function Sidebar() {
       <aside className="flex h-full flex-col w-full break-words px-2 overflow-x-hidden columns-1">
         {/* Top */}
         <div className="mt-4 relative pb-2">
-          <div className="flex flex-col space-y-1">
+          <div className="flex flex-col space-y-1 items-center">
             {/* MENU HEADER */}
             <div className="flex flex-col items-center gap-[20px] w-full px-[18px] max-sm:px-[10px]">
               <div
                 className={`flex flex-row items-center w-full max-sm:justify-center`}
               >
                 <h5
-                  className={`text-[var(--Logo)] text-[18px] max-sm:text-[8px] font-bold ${
+                  className={`text-[var(--Logo)] text-[18px] text-center max-sm:text-[8px] font-bold ${
                     isSidebarExpanded ? "mr-[35px] max-sm:mr-0" : "mr-0"
                   }`}
                 >

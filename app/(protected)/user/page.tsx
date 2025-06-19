@@ -7,6 +7,7 @@ import Uppy from "@uppy/core";
 import type { UppyFile as GenericUppyFile } from "@uppy/core";
 import AwsS3 from "@uppy/aws-s3";
 import { ImagePlus, User, Mail, Save } from "lucide-react";
+import { callToaster } from "@/lib/toaster";
 import * as authService from "@/services/authServices";
 import * as updateUser from "@/services/updateUserServices";
 import * as uploadService from "@/services/uploadServices";
@@ -145,6 +146,7 @@ const Page = () => {
       setUploadProgress(100);
       setPhoto_url(response.uploadURL || "");
       console.log("Upload successful to:", response.uploadURL);
+      callToaster("success", "Upload Profile Photo Success");
     });
 
     // Logic drag and drop file
@@ -209,16 +211,10 @@ const Page = () => {
     // Implementasi logika penyimpanan data
     try {
       updateUser.updateUserData(userName, userEmail, photo_url);
-      console.log("Sukses");
+      callToaster("success", "User Update Success");
     } catch (error) {
-      console.log("Update Failed");
-      console.error(error);
+      callToaster("error", "User Update Failed");
     }
-    console.log("Data disimpan:", {
-      userName,
-      userEmail,
-      photo_url,
-    });
   };
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] mr-[20px] max-sm:mt-[16px]">
@@ -250,6 +246,7 @@ const Page = () => {
                 className="w-36 h-36 max-sm:w-25 max-sm:h-25 mb-5 rounded-full object-cover"
                 // Opsional: Tambahkan key untuk memaksa re-render jika src berubah dari/ke default
                 key={selectedImage}
+                priority
                 // Fallback jika URL gambar dari API error (misal broken link)
                 onError={() => {
                   if (selectedImage !== "/user/user.svg") {
@@ -350,7 +347,7 @@ const Page = () => {
 
           <div className="flex justify-end w-full mt-5">
             <button
-              className="bg-[var(--MainButton)] text-white px-[50px] py-2 rounded-[8px] flex items-center max-sm:w-full max-sm:justify-center"
+              className="bg-[var(--MainButton)] text-white px-[50px] py-2 rounded-[8px] flex items-center cursor-pointer hover:bg-[var(--ButtonHover)] max-sm:w-full max-sm:justify-center"
               onClick={handleSave}
             >
               <Save className="mr-2" />

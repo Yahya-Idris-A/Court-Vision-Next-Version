@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Pencil, Calendar, Map, Video, CloudUpload } from "lucide-react";
+import { callToaster } from "@/lib/toaster";
 import classNames from "classnames";
 import Uppy from "@uppy/core";
 import type { UppyFile as GenericUppyFile } from "@uppy/core";
@@ -70,10 +71,10 @@ const Page = () => {
       const dateUp = date?.toISOString().split("T")[0] ?? "";
       try {
         uploadService.uploadAllData(title, dateUp, venue, video_url);
-        console.log("Sukses");
+        callToaster("success", "Data Uploaded");
         window.location.href = "/analyze";
       } catch (error) {
-        console.log("Gagal upload");
+        callToaster("error", "Data Upload Failed");
         console.error(error);
       }
     }
@@ -231,6 +232,7 @@ const Page = () => {
       setUploadSuccess(true);
       setUploadProgress(100);
       setvideo_url(response.uploadURL || "");
+      callToaster("success", "Video Uploaded");
       console.log("Upload successful to:", response.uploadURL);
     });
 
@@ -238,6 +240,7 @@ const Page = () => {
     uppyInstance.on("upload-error", (file, error) => {
       setIsUploading(false);
       console.error("Upload failed:", error);
+      callToaster("error", "Video Upload Failed");
     });
 
     // Logic drag and drop file
