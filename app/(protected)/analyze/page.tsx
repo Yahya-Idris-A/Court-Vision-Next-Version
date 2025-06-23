@@ -5,6 +5,7 @@ import React from "react";
 import * as ExtendedEventSource from "extended-eventsource";
 import ListVideoCards from "@/components/cards/listVideoCards";
 import Pagination from "@/components/partials/pagination";
+import Link from "next/link";
 import * as analyzeService from "@/services/analyzeService";
 
 interface VideoData {
@@ -100,22 +101,36 @@ const Page = () => {
           List of Videos
         </p>
       </div>
-
-      <div className="flex flex-col items-center justify-start w-full gap-[16px]">
-        {/* Video Cards */}
-        {currentData.map((item, index) => (
-          <ListVideoCards
-            key={index}
-            thumbnail={item.thumbnail_url}
-            title={item.title}
-            date={item.date}
-            venue={item.venue}
-            uploadProgress={item.uploadProgress}
-            uploadStatus={item.uploadStatus}
-            detailAnalysisUrl={item.detailAnalysisUrl}
-          />
-        ))}
-      </div>
+      {currentData.length > 0 ? (
+        <div className="flex flex-col items-center justify-start w-full gap-[16px]">
+          {/* Video Cards */}
+          {currentData.map((item, index) => (
+            <ListVideoCards
+              key={index}
+              thumbnail={item.thumbnail_url}
+              title={item.title}
+              date={item.date}
+              venue={item.venue}
+              uploadProgress={item.uploadProgress}
+              uploadStatus={item.uploadStatus}
+              detailAnalysisUrl={item.detailAnalysisUrl}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-start w-full gap-[16px]">
+          <p className="text-[var(--MainText)] text-[34px]">
+            You don't have data to analyze, tap{" "}
+            <Link
+              href="/upload"
+              className="text-[var(--MainButton)] hover:underline hover:text-[var(--ButtonHover)]"
+            >
+              here
+            </Link>{" "}
+            to upload new data
+          </p>
+        </div>
+      )}
       {/* Pagination */}
       {videos.length > itemsPerPage && (
         <div className="flex mt-4 w-full justify-end mr-[30px] max-sm:mr-[10px]">
