@@ -120,7 +120,7 @@ const Page = () => {
       ) : (
         <div className="flex flex-col items-center justify-start w-full gap-[16px]">
           <p className="text-[var(--MainText)] text-[34px]">
-            You don't have data to analyze, tap{" "}
+            You don&apos;t have data to analyze, tap{" "}
             <Link
               href="/upload"
               className="text-[var(--MainButton)] hover:underline hover:text-[var(--ButtonHover)]"
