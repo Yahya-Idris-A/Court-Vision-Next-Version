@@ -11,7 +11,7 @@ export default function AuthLayout({
       <Sidebar />
       <div className="flex flex-col items-center justify-start min-h-screen w-full">
         <AuthNavbar />
-        <div className="w-full">{children}</div>
+        {children}
       </div>
     </div>
   );
