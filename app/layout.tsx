@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 
 const hanken_grotesk = Hanken_Grotesk({
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
