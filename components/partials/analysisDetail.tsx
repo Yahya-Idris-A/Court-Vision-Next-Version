@@ -4,7 +4,6 @@ import VideoPlayerCard from "@/components/partials/videoPlayer";
 import TeamStats from "@/components/partials/teamStats";
 import EventMap from "@/components/partials/eventMap";
 import * as analyzeServices from "@/services/analyzeService";
-import { s } from "framer-motion/client";
 
 type AnalysisDetailProps = {
   id: string;
@@ -29,6 +28,8 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
         setVideoSource(data?.video.video_result || "");
         const jsonTrackingResult = data?.video.tracking_result || "";
         const jsonShotResult = data?.video.shot_result || "";
+        console.log(jsonShotResult);
+
         try {
           const response = await fetch(jsonTrackingResult);
           if (!response.ok) {

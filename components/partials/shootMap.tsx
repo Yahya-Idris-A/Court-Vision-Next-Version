@@ -28,6 +28,8 @@ const Shotmap: React.FC<ShotmapProps> = ({ playerIds, shotData }) => {
   >([]);
 
   const initShotmap = useCallback(async () => {
+    console.log(playerIds, shotData);
+
     try {
       if (courtRef.current) {
         const imageRect = courtRef.current.getBoundingClientRect();
