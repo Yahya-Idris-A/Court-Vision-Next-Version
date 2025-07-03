@@ -2,11 +2,22 @@
 import { useState, useEffect, useRef } from "react";
 
 import React from "react";
-import * as ExtendedEventSource from "extended-eventsource";
-import ListVideoCards from "@/components/cards/listVideoCards";
-import Pagination from "@/components/partials/pagination";
+// import * as ExtendedEventSource from "extended-eventsource";
+// import ListVideoCards from "@/components/cards/listVideoCards";
+// import Pagination from "@/components/partials/pagination";
 import Link from "next/link";
 import * as analyzeService from "@/services/analyzeService";
+import dynamic from "next/dynamic";
+
+const ListVideoCards = dynamic(
+  () => import("@/components/cards/listVideoCards"),
+  {
+    loading: () => (
+      <div className="w-full h-[200px] bg-gray-200 animate-pulse rounded-md" />
+    ), // bisa kamu ganti skeleton loader
+    ssr: false, // matikan jika tidak perlu SSR
+  }
+);
 
 interface VideoData {
   id: string;
@@ -19,26 +30,25 @@ interface VideoData {
   detailAnalysisUrl: string;
 }
 
-const itemsPerPage = 3;
+// const itemsPerPage = 3;
 
 const Page = () => {
   const [videos, setVideos] = useState<VideoData[]>([]);
   const videosRef = useRef(videos);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  // const [currentPage, setCurrentPage] = useState(1);
 
-  const totalItems = videos.length;
-  const currentData = videos.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // const totalItems = videos.length;
+  // const currentData = videos.slice(
+  //   (currentPage - 1) * itemsPerPage,
+  //   currentPage * itemsPerPage
+  // );
 
   const getAllVideos = async () => {
     const rawData = await analyzeService.getAllVideos();
-    console.log("video data: ", rawData);
-
     const formattedData: VideoData[] = rawData.map((item) => ({
       id: item.id,
-      thumbnail_url: item.thumbnail_url || "/thumb/thumbnail.jpg",
+      thumbnail_url: "/thumb/thumbnail.jpg",
       title: item.title,
       date: new Date(item.date).toISOString().split("T")[0] ?? "",
       venue: item.venue,
@@ -46,8 +56,8 @@ const Page = () => {
       uploadStatus: item.status,
       detailAnalysisUrl: `/detail-analyze/${item.id}`,
     }));
-
     setVideos(formattedData);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -58,40 +68,40 @@ const Page = () => {
     videosRef.current = videos;
   }, [videos]);
 
-  useEffect(() => {
-    const token = analyzeService.getToken();
+  // useEffect(() => {
+  //   const token = analyzeService.getToken();
 
-    const eventSource = new ExtendedEventSource.EventSource(
-      analyzeService.endPointUploadProgress,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+  //   const eventSource = new ExtendedEventSource.EventSource(
+  //     analyzeService.endPointUploadProgress,
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     }
+  //   );
 
-    eventSource.onmessage = (event: MessageEvent) => {
-      if (event.data) {
-        const data = JSON.parse(event?.data);
+  //   eventSource.onmessage = (event: MessageEvent) => {
+  //     if (event.data) {
+  //       const data = JSON.parse(event?.data);
 
-        const updatedVideos = videosRef.current.map((video) =>
-          video.id === data.video.id
-            ? {
-                ...video,
-                uploadProgress: data.video.progress,
-                uploadStatus: data.video.status,
-              }
-            : video
-        );
+  //       const updatedVideos = videosRef.current.map((video) =>
+  //         video.id === data.video.id
+  //           ? {
+  //               ...video,
+  //               uploadProgress: data.video.progress,
+  //               uploadStatus: data.video.status,
+  //             }
+  //           : video
+  //       );
 
-        setVideos(updatedVideos);
-      }
-    };
+  //       setVideos(updatedVideos);
+  //     }
+  //   };
 
-    eventSource.onerror = (error) => {
-      console.error("Error occurred:", error);
-    };
-  }, []);
+  //   eventSource.onerror = (error) => {
+  //     console.error("Error occurred:", error);
+  //   };
+  // }, []);
 
   return (
     <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] mr-[20px] max-sm:mt-[16px]">
@@ -101,10 +111,10 @@ const Page = () => {
           List of Videos
         </p>
       </div>
-      {currentData.length > 0 ? (
+      {videos.length > 0 ? (
         <div className="flex flex-col items-center justify-start w-full gap-[16px]">
           {/* Video Cards */}
-          {currentData.map((item, index) => (
+          {videos.map((item, index) => (
             <ListVideoCards
               key={index}
               thumbnail={item.thumbnail_url}
@@ -117,6 +127,8 @@ const Page = () => {
             />
           ))}
         </div>
+      ) : isLoading ? (
+        <div className="w-full h-[200px] bg-gray-200 animate-pulse rounded-md" />
       ) : (
         <div className="flex flex-col items-center justify-start w-full gap-[16px]">
           <p className="text-[var(--MainText)] text-[34px]">
@@ -132,7 +144,7 @@ const Page = () => {
         </div>
       )}
       {/* Pagination */}
-      {videos.length > itemsPerPage && (
+      {/* {videos.length > itemsPerPage && (
         <div className="flex mt-4 w-full justify-end mr-[30px] max-sm:mr-[10px]">
           <Pagination
             currentPage={currentPage}
@@ -141,7 +153,7 @@ const Page = () => {
             onPageChange={setCurrentPage}
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

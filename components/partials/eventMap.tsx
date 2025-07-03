@@ -5,8 +5,10 @@ import Shootmap from "./shootMap";
 import HeatMap from "./heatMap";
 
 type TrackingData = Record<string, unknown>;
+type ShotData = Record<string, unknown>;
 interface TrackingDataProps {
   trackingResult: TrackingData;
+  shotResult: ShotData;
 }
 
 // Tipe untuk konfigurasi pemain yang akan digunakan di UI
@@ -15,7 +17,10 @@ interface PlayerConfig {
   name: string;
 }
 
-const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
+const TeamEventCard: React.FC<TrackingDataProps> = ({
+  trackingResult,
+  shotResult,
+}) => {
   const playersData = useRef<Record<string, unknown>>({});
   useEffect(() => {
     // Ambil data pemain dari file JSON
@@ -225,7 +230,7 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({ trackingResult }) => {
       </div>
       {/* Shotmap */}
       <div className="flex w-full">
-        <Shootmap />
+        <Shootmap playerIds={selectedPlayerID} shotData={shotResult} />
       </div>
 
       {/* Heatmap Header */}

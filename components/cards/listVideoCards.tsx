@@ -122,7 +122,7 @@ export default function AnalysisCard({
         <div className="flex flex-row justify-start gap-[5px] items-center">
           {uploadStatus == "waiting" || uploadStatus == "processing" ? (
             <>
-              <Loader2 className="w-[22px] h-[22px] text-[var(--MainButton)]] animate-spin" />
+              <Loader2 className="w-[22px] h-[22px] text-[var(--MainButton)] animate-spin" />
               <p className="text-[15px] text-[var(--MainText)] font-normal">
                 {loadingText}
               </p>

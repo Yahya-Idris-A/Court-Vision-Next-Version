@@ -4,12 +4,14 @@ import VideoPlayerCard from "@/components/partials/videoPlayer";
 import TeamStats from "@/components/partials/teamStats";
 import EventMap from "@/components/partials/eventMap";
 import * as analyzeServices from "@/services/analyzeService";
+import { s } from "framer-motion/client";
 
 type AnalysisDetailProps = {
   id: string;
 };
 
 type TrackingData = Record<string, unknown>;
+type ShotData = Record<string, unknown>;
 
 const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
   const [videoThumbnail, setVideoThumbnail] = useState("/thumb/thumbnail.jpg");
@@ -17,6 +19,7 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
   const [trackingResult, setTrackingResult] = useState<TrackingData | null>(
     null
   );
+  const [shotResult, setShotResult] = useState<ShotData | null>(null);
 
   useEffect(() => {
     const getAnalysisData = async () => {
@@ -24,9 +27,10 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
         const data = await analyzeServices.getVideoDetail(id);
         setVideoThumbnail(data?.video.thumbnail_url || "");
         setVideoSource(data?.video.video_result || "");
-        const jsonDownloadUrl = data?.video.tracking_result || "";
+        const jsonTrackingResult = data?.video.tracking_result || "";
+        const jsonShotResult = data?.video.shot_result || "";
         try {
-          const response = await fetch(jsonDownloadUrl);
+          const response = await fetch(jsonTrackingResult);
           if (!response.ok) {
             throw new Error(`Gagal mengambil data: ${response.status}`);
           }
@@ -36,7 +40,17 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
         } catch (error) {
           console.error(error);
         }
-        console.log(data.video.shot_result);
+        try {
+          const response = await fetch(jsonShotResult);
+          if (!response.ok) {
+            throw new Error(`Gagal mengambil data: ${response.status}`);
+          }
+          const jsonText = await response.text();
+          const data: ShotData = JSON.parse(jsonText);
+          setShotResult(data);
+        } catch (error) {
+          console.error("Gagal mengambil data shot result:", error);
+        }
       } catch (error) {
         console.error("Gagal mengambil data analisis:", error);
       }
@@ -58,7 +72,9 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
       {/* Stats */}
       <TeamStats totalShots={{ home: 10, away: 10 }} />
       {/* Event Map */}
-      {trackingResult && <EventMap trackingResult={trackingResult} />}
+      {trackingResult && shotResult && (
+        <EventMap trackingResult={trackingResult} shotResult={shotResult} />
+      )}
     </div>
   );
 };

@@ -130,9 +130,9 @@ export default function Sidebar() {
           onClick={toggleSidebar}
         >
           {isSidebarExpanded ? (
-            <ChevronLeft size={30} />
+            <ChevronLeft aria-label="Collapse sidebar" size={30} />
           ) : (
-            <ChevronRight size={30} />
+            <ChevronRight aria-label="Expand sidebar" size={30} />
           )}
         </button>
       </div>

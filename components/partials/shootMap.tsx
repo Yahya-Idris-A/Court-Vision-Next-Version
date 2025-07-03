@@ -5,6 +5,13 @@ import Image from "next/image";
 const COURT_WIDTH = 28; // FIBA: 28m, NBA: 94ft
 const COURT_HEIGHT = 15; // FIBA: 15m, NBA: 50ft
 
+type ShotData = Record<string, unknown>;
+
+type ShotmapProps = {
+  playerIds: string[];
+  shotData: ShotData;
+};
+
 // Data asli koordinat pemain (berdasarkan ukuran lapangan asli)
 const shots = [
   { x: 1, y: 1.5, value: "4" },
@@ -14,7 +21,7 @@ const shots = [
   { x: 1, y: 1, value: "1" },
 ];
 
-const Shotmap = () => {
+const Shotmap: React.FC<ShotmapProps> = ({ playerIds, shotData }) => {
   const courtRef = useRef<HTMLImageElement | null>(null);
   const [scaledShots, setScaledShots] = useState<
     { x: number; y: number; value: string }[]

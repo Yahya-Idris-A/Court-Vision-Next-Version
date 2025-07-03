@@ -63,11 +63,6 @@ const Page = () => {
   // Fungsi buat upload data analisis
   const startAnalysis = () => {
     if (uploadSuccess) {
-      console.log("Starting analysis for:", selectedFileRef.current?.name);
-      console.log("Title:", title);
-      console.log("Venue:", venue);
-      console.log("Date:", date);
-      console.log("URL:", video_url);
       const dateUp = date?.toISOString().split("T")[0] ?? "";
       try {
         uploadService.uploadAllData(title, dateUp, venue, video_url);
@@ -233,7 +228,6 @@ const Page = () => {
       setUploadProgress(100);
       setvideo_url(response.uploadURL || "");
       callToaster("success", "Video Uploaded");
-      console.log("Upload successful to:", response.uploadURL);
     });
 
     // Uppy events saat upload video error
@@ -276,7 +270,6 @@ const Page = () => {
         e.dataTransfer.clearData();
       }
     };
-    // uppyInstance.cancelAll();
 
     if (dropZone) {
       dropZone.addEventListener("dragover", handleDragOver as EventListener);

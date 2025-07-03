@@ -98,8 +98,6 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
           }
         }
       }
-      // console.log("virtual Width: ", virtualW.current);
-      // console.log("virtual Height: ", virtualH.current);
     } else {
       console.warn(
         "trackingData tidak memiliki properti 'court_length_px' dan 'court_width_px' yang valid."
