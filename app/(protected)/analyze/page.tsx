@@ -3,10 +3,21 @@ import { useState, useEffect, useRef } from "react";
 
 import React from "react";
 // import * as ExtendedEventSource from "extended-eventsource";
-import ListVideoCards from "@/components/cards/listVideoCards";
+// import ListVideoCards from "@/components/cards/listVideoCards";
 // import Pagination from "@/components/partials/pagination";
 import Link from "next/link";
 import * as analyzeService from "@/services/analyzeService";
+import dynamic from "next/dynamic";
+
+const ListVideoCards = dynamic(
+  () => import("@/components/cards/listVideoCards"),
+  {
+    loading: () => (
+      <div className="w-full h-[200px] bg-gray-200 animate-pulse rounded-md" />
+    ), // bisa kamu ganti skeleton loader
+    ssr: false, // matikan jika tidak perlu SSR
+  }
+);
 
 interface VideoData {
   id: string;
@@ -117,7 +128,7 @@ const Page = () => {
           ))}
         </div>
       ) : isLoading ? (
-        <div className="w-full h-[200px] bg-gray-200 animate-pulse rounded-md" />
+        <div />
       ) : (
         <div className="flex flex-col items-center justify-start w-full gap-[16px]">
           <p className="text-[var(--MainText)] text-[34px]">
