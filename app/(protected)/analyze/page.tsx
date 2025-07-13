@@ -2,9 +2,8 @@
 import { useState, useEffect, useRef } from "react";
 
 import React from "react";
-// import * as ExtendedEventSource from "extended-eventsource";
-// import ListVideoCards from "@/components/cards/listVideoCards";
-// import Pagination from "@/components/partials/pagination";
+import * as ExtendedEventSource from "extended-eventsource";
+import Pagination from "@/components/partials/pagination";
 import Link from "next/link";
 import * as analyzeService from "@/services/analyzeService";
 import dynamic from "next/dynamic";
@@ -14,8 +13,8 @@ const ListVideoCards = dynamic(
   {
     loading: () => (
       <div className="w-full h-[200px] bg-gray-200 animate-pulse rounded-md" />
-    ), // bisa kamu ganti skeleton loader
-    ssr: false, // matikan jika tidak perlu SSR
+    ),
+    ssr: false,
   }
 );
 
@@ -30,25 +29,25 @@ interface VideoData {
   detailAnalysisUrl: string;
 }
 
-// const itemsPerPage = 3;
+const itemsPerPage = 5;
 
 const Page = () => {
   const [videos, setVideos] = useState<VideoData[]>([]);
   const videosRef = useRef(videos);
   const [isLoading, setIsLoading] = useState(true);
-  // const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // const totalItems = videos.length;
-  // const currentData = videos.slice(
-  //   (currentPage - 1) * itemsPerPage,
-  //   currentPage * itemsPerPage
-  // );
+  const totalItems = videos.length;
+  const currentData = videos.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const getAllVideos = async () => {
     const rawData = await analyzeService.getAllVideos();
     const formattedData: VideoData[] = rawData.map((item) => ({
       id: item.id,
-      thumbnail_url: "/thumb/thumbnail.jpg",
+      thumbnail_url: item.thumbnail_url ?? "/thumb/thumbnail.jpg",
       title: item.title,
       date: new Date(item.date).toISOString().split("T")[0] ?? "",
       venue: item.venue,
@@ -68,43 +67,43 @@ const Page = () => {
     videosRef.current = videos;
   }, [videos]);
 
-  // useEffect(() => {
-  //   const token = analyzeService.getToken();
+  useEffect(() => {
+    const token = analyzeService.getToken();
 
-  //   const eventSource = new ExtendedEventSource.EventSource(
-  //     analyzeService.endPointUploadProgress,
-  //     {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     }
-  //   );
+    const eventSource = new ExtendedEventSource.EventSource(
+      analyzeService.endPointUploadProgress,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  //   eventSource.onmessage = (event: MessageEvent) => {
-  //     if (event.data) {
-  //       const data = JSON.parse(event?.data);
+    eventSource.onmessage = (event: MessageEvent) => {
+      if (event.data) {
+        const data = JSON.parse(event?.data);
 
-  //       const updatedVideos = videosRef.current.map((video) =>
-  //         video.id === data.video.id
-  //           ? {
-  //               ...video,
-  //               uploadProgress: data.video.progress,
-  //               uploadStatus: data.video.status,
-  //             }
-  //           : video
-  //       );
+        const updatedVideos = videosRef.current.map((video) =>
+          video.id === data.video.id
+            ? {
+                ...video,
+                uploadProgress: data.video.progress,
+                uploadStatus: data.video.status,
+              }
+            : video
+        );
 
-  //       setVideos(updatedVideos);
-  //     }
-  //   };
+        setVideos(updatedVideos);
+      }
+    };
 
-  //   eventSource.onerror = (error) => {
-  //     console.error("Error occurred:", error);
-  //   };
-  // }, []);
+    eventSource.onerror = (error) => {
+      console.error("Error occurred:", error);
+    };
+  }, []);
 
   return (
-    <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] mr-[20px] max-sm:mt-[16px]">
+    <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] pr-[20px] max-sm:mt-[16px]">
       {/* Header */}
       <div className="flex flex-row items-center justify-start w-full p-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
         <p className="text-[18px] text-[var(--MainText)] font-semibold">
@@ -114,7 +113,7 @@ const Page = () => {
       {videos.length > 0 ? (
         <div className="flex flex-col items-center justify-start w-full gap-[16px]">
           {/* Video Cards */}
-          {videos.map((item, index) => (
+          {currentData.map((item, index) => (
             <ListVideoCards
               key={index}
               thumbnail={item.thumbnail_url}
@@ -144,7 +143,7 @@ const Page = () => {
         </div>
       )}
       {/* Pagination */}
-      {/* {videos.length > itemsPerPage && (
+      {videos.length > itemsPerPage && (
         <div className="flex mt-4 w-full justify-end mr-[30px] max-sm:mr-[10px]">
           <Pagination
             currentPage={currentPage}
@@ -153,7 +152,7 @@ const Page = () => {
             onPageChange={setCurrentPage}
           />
         </div>
-      )} */}
+      )}
     </div>
   );
 };

@@ -10,72 +10,106 @@ type ShotData = Record<string, unknown>;
 type ShotmapProps = {
   playerIds: string[];
   shotData: ShotData;
+  virtualCourtWidth?: number;
+  virtualCourtHeight?: number;
 };
 
-// Data asli koordinat pemain (berdasarkan ukuran lapangan asli)
-const shots = [
-  { x: 1, y: 1.5, value: "4" },
-  { x: 0, y: 0, value: "5" },
-  { x: 15, y: 14, value: "3" },
-  { x: 4, y: 10, value: "2" },
-  { x: 1, y: 1, value: "1" },
-];
-
-const Shotmap: React.FC<ShotmapProps> = ({ playerIds, shotData }) => {
+const Shotmap: React.FC<ShotmapProps> = ({
+  playerIds,
+  shotData,
+  virtualCourtWidth,
+  virtualCourtHeight,
+}) => {
   const courtRef = useRef<HTMLImageElement | null>(null);
+  const scaleXRef = useRef(0);
+  const scaleYRef = useRef(0);
   const [scaledShots, setScaledShots] = useState<
     { x: number; y: number; value: string }[]
   >([]);
 
-  const initShotmap = useCallback(async () => {
-    console.log(playerIds, shotData);
+  const initShotmap = useCallback(async (playerId: string) => {
+    if (!playerId || playerIds.length === 0) {
+      setScaledShots([]);
+    } else {
+      const coordinateCounts = new Map();
+      const virtualWidth = virtualCourtWidth || 0;
+      const virtualHeight = virtualCourtHeight || 0;
 
-    try {
-      if (courtRef.current) {
-        const imageRect = courtRef.current.getBoundingClientRect();
-        const scaled = shots.map((shot) => ({
-          // Position from left
-          x: (shot.x / COURT_WIDTH) * imageRect.width,
-          // Position from top
-          y: (shot.y / COURT_HEIGHT) * imageRect.height,
-          value: shot.value,
-        }));
-
-        setScaledShots(scaled);
+      const scaleXForPlayer = COURT_WIDTH / virtualWidth;
+      const scaleYForPlayer = COURT_HEIGHT / virtualHeight;
+      if (shotData && "shots" in shotData && Array.isArray(shotData.shots)) {
+        const filteredShots = shotData.shots.filter((shot) =>
+          playerId.includes(String(shot.player_id))
+        );
+        for (const shot of filteredShots) {
+          if (shot.player_coords) {
+            const coords = shot.player_coords;
+            const key = `${coords.x * scaleXForPlayer},${
+              coords.y * scaleYForPlayer
+            }`;
+            const currentCount = coordinateCounts.get(key) || 0;
+            coordinateCounts.set(key, currentCount + 1);
+          }
+        }
+      } else {
+        console.warn("shotData tidak memiliki properti 'shots' yang valid.");
       }
-    } catch (error) {
-      console.error("Error initializing shotmap:", error);
+      const formattedData = Array.from(coordinateCounts, ([key, count]) => {
+        const [xStr, yStr] = key.split(",");
+
+        // Ubah string x dan y menjadi angka
+        const x = parseInt(xStr, 10);
+        const y = parseInt(yStr, 10);
+        return {
+          x: x,
+          y: y,
+          value: String(count),
+        };
+      });
+
+      try {
+        if (courtRef.current) {
+          const imageRect = courtRef.current.getBoundingClientRect();
+          scaleXRef.current = imageRect.width / COURT_WIDTH;
+          scaleYRef.current = imageRect.height / COURT_HEIGHT;
+          const scaled = formattedData.map((shot) => ({
+            // Position from left
+            x: shot.x * scaleXRef.current,
+            // Position from top
+            y: shot.y * scaleYRef.current,
+            value: shot.value,
+          }));
+
+          setScaledShots(scaled);
+        }
+      } catch (error) {
+        console.error("Error initializing shotmap:", error);
+      }
     }
   }, []);
 
   const handleResize = useCallback(() => {
-    initShotmap();
+    initShotmap(playerIds[0]);
   }, [initShotmap]);
 
   useEffect(() => {
-    initShotmap();
+    initShotmap(playerIds[0]);
 
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [initShotmap, handleResize]);
+  }, [initShotmap, handleResize, playerIds]);
 
   return (
     <div ref={courtRef} className="relative w-full">
       {/* Gambar Lapangan */}
-      {/* <img
-        src="/court/bg-court.svg"
-        className="w-full"
-        onLoad={initShotmap}
-        alt="Court"
-      /> */}
       <Image
         src="/court/bg-court.svg"
         alt="Basketball Court"
         width={0}
         height={0}
-        onLoad={initShotmap}
+        onLoad={() => initShotmap(playerIds[0])}
         className="object-cover w-full h-full"
       />
 

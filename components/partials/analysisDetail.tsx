@@ -28,7 +28,6 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
         setVideoSource(data?.video.video_result || "");
         const jsonTrackingResult = data?.video.tracking_result || "";
         const jsonShotResult = data?.video.shot_result || "";
-        console.log(jsonShotResult);
 
         try {
           const response = await fetch(jsonTrackingResult);
@@ -71,7 +70,7 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
         <VideoPlayerCard thumbnail={videoThumbnail} videoSrc={videoSource} />
       )}
       {/* Stats */}
-      <TeamStats totalShots={{ home: 10, away: 10 }} />
+      {shotResult && <TeamStats shotResult={shotResult} />}
       {/* Event Map */}
       {trackingResult && shotResult && (
         <EventMap trackingResult={trackingResult} shotResult={shotResult} />

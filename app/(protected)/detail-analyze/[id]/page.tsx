@@ -7,7 +7,7 @@ export default async function DetailAnalysisPage({
 }) {
   const { id } = await params;
   return (
-    <div>
+    <div className="w-full pr-[20px]">
       <AnalysisDetail id={id} />
     </div>
   );

@@ -8,6 +8,8 @@ type TrackingData = Record<string, unknown>;
 type HeatMapProps = {
   playerIds: string[];
   trackingData: TrackingData;
+  virtualCourtWidth?: number;
+  virtualCourtHeight?: number;
 };
 
 interface Point {
@@ -27,7 +29,12 @@ interface HeatmapData {
 const COURT_WIDTH = 28;
 const COURT_HEIGHT = 15;
 
-const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
+const CourtHeatmp: React.FC<HeatMapProps> = ({
+  playerIds,
+  trackingData,
+  virtualCourtWidth,
+  virtualCourtHeight,
+}) => {
   const courtContainerRef = useRef<HTMLDivElement | null>(null);
   const courtImageRef = useRef<HTMLImageElement | null>(null);
 
@@ -37,8 +44,8 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
   const scaleXRef = useRef(0);
   const scaleYRef = useRef(0);
 
-  const virtualW = useRef(0);
-  const virtualH = useRef(0);
+  const virtualW = useRef(virtualCourtWidth || 0);
+  const virtualH = useRef(virtualCourtHeight || 0);
 
   const breakpoint = useBreakpoint();
   const heatmapRadius = useMemo(() => {
@@ -68,41 +75,6 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
       script.onerror = () => reject(new Error("Failed to load heatmap.js"));
       document.head.appendChild(script);
     });
-  };
-
-  const setVirtualCourtSize = () => {
-    if (
-      trackingData &&
-      typeof trackingData === "object" &&
-      "court_length_px" in trackingData &&
-      "court_width_px" in trackingData
-    ) {
-      const courtLengthPx = (trackingData as { court_length_px: number })
-        .court_length_px;
-      const courtWidthPx = (trackingData as { court_width_px: number })
-        .court_width_px;
-      if (courtLengthPx > 0 && courtWidthPx > 0) {
-        virtualW.current = courtLengthPx;
-        virtualH.current = courtWidthPx;
-      } else {
-        for (const playerFrames of Object.values(playersCoordinates.current)) {
-          // Object.values(playerFrames) akan mengambil semua data koordinat -> [ {x, y}, {x, y}, ... ]
-          for (const point of Object.values(playerFrames)) {
-            // Bandingkan dan perbarui nilai maksimum x dan y
-            if (point.x > virtualW.current) {
-              virtualW.current = point.x;
-            }
-            if (point.y > virtualH.current) {
-              virtualH.current = point.y;
-            }
-          }
-        }
-      }
-    } else {
-      console.warn(
-        "trackingData tidak memiliki properti 'court_length_px' dan 'court_width_px' yang valid."
-      );
-    }
   };
 
   const getHeatmapData = (playerIds?: string[]) => {
@@ -180,10 +152,8 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
           value: point.value,
         })),
       };
-      // console.log("Scaled Data: ", scaledDataPoints);
 
       heatmap.setData(scaledDataPoints);
-      // console.log("Heatmap data set:", scaledDataPoints);
     } catch (error) {
       console.error("Error initializing heatmap:", error);
     }
@@ -200,7 +170,6 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
 
     if (containerElement) {
       resizeObserver = new ResizeObserver(() => {
-        // console.log("Court container resized, triggering heatmap update.");
         // Tidak perlu setTimeout di sini jika updateOrInitializeHeatmap sudah menangani async dengan baik
         const currentContainer = courtContainerRef.current;
         if (currentContainer) {
@@ -219,7 +188,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
         resizeObserver.unobserve(containerElement);
       }
     };
-  }, [initHeatmap]);
+  }, [initHeatmap, virtualCourtHeight, virtualCourtWidth]);
 
   useEffect(() => {
     // Isi koordinat pemain saat mount
@@ -247,9 +216,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({ playerIds, trackingData }) => {
       );
       playersCoordinates.current = {};
     }
-
-    setVirtualCourtSize();
-  }, [setVirtualCourtSize, trackingData]);
+  }, [trackingData]);
 
   return (
     <div className="relative w-full" ref={courtContainerRef}>

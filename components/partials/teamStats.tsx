@@ -1,16 +1,19 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
+type ShotData = Record<string, unknown>;
 interface MatchStatsCardProps {
-  totalShots: {
-    home: number;
-    away: number;
-  };
+  shotResult: ShotData;
 }
 
 const getPercentage = (home: number, away: number) => {
   const total = home + away;
   return total === 0 ? 50 : (home / total) * 100;
+};
+
+type TotalShots = {
+  home: number;
+  away: number;
 };
 
 const StatRow = ({
@@ -64,15 +67,50 @@ const StatRow = ({
   );
 };
 
-const MatchStatsCard: React.FC<MatchStatsCardProps> = ({ totalShots }) => {
+const MatchStatsCard: React.FC<MatchStatsCardProps> = ({ shotResult }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [totalShots, setTotalShots] = useState<TotalShots>({
+    home: 0,
+    away: 0,
+  });
+
+  const initShotCount = useCallback(() => {
+    if (
+      shotResult &&
+      "shots" in shotResult &&
+      Array.isArray(shotResult.shots)
+    ) {
+      // 1. Buat variabel lokal untuk menghitung
+      let homeCount = 0;
+      let awayCount = 0;
+
+      // 2. Lakukan perulangan dan update variabel lokal
+      for (const shot of shotResult.shots) {
+        if (shot.team_id === 0) {
+          homeCount += 1;
+        } else {
+          awayCount += 1;
+        }
+      }
+
+      // 3. Setelah perulangan selesai, panggil setTotalShots
+      setTotalShots({ home: homeCount, away: awayCount });
+    } else {
+      console.warn("shotResult tidak valid atau tidak berisi 'shots'.");
+    }
+  }, [shotResult]);
 
   useEffect(() => {
+    initShotCount();
+
     // Simulating data fetch delay
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setIsLoading(false);
     }, 2000); // Simulate 2 seconds delay
-  }, []);
+
+    // Cleanup timer
+    return () => clearTimeout(timer);
+  }, [initShotCount]);
 
   return (
     <div className="flex flex-col items-center justify-start w-full p-[20px] gap-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">

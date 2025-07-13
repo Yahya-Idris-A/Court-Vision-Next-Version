@@ -17,6 +17,11 @@ interface PlayerConfig {
   name: string;
 }
 
+interface Point {
+  x: number;
+  y: number;
+}
+
 const TeamEventCard: React.FC<TrackingDataProps> = ({
   trackingResult,
   shotResult,
@@ -133,6 +138,76 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({
   const currentSelectedPlayerIds =
     selectedTeam === "A" ? selectedPlayersTeamA : selectedPlayersTeamB;
 
+  // Menentukan ukuran virtual court berdasarkan data tracking
+  const virtualW = useRef(0);
+  const virtualH = useRef(0);
+  const playersCoordinates = useRef<Record<string, Point[]>>({});
+
+  const setVirtualCourtSize = () => {
+    if (
+      trackingResult &&
+      typeof trackingResult === "object" &&
+      "court_length_px" in trackingResult &&
+      "court_width_px" in trackingResult
+    ) {
+      const courtLengthPx = (trackingResult as { court_length_px: number })
+        .court_length_px;
+      const courtWidthPx = (trackingResult as { court_width_px: number })
+        .court_width_px;
+      if (courtLengthPx > 0 && courtWidthPx > 0) {
+        virtualW.current = courtLengthPx;
+        virtualH.current = courtWidthPx;
+      } else {
+        for (const playerFrames of Object.values(playersCoordinates.current)) {
+          // Object.values(playerFrames) akan mengambil semua data koordinat -> [ {x, y}, {x, y}, ... ]
+          for (const point of Object.values(playerFrames)) {
+            // Bandingkan dan perbarui nilai maksimum x dan y
+            if (point.x > virtualW.current) {
+              virtualW.current = point.x;
+            }
+            if (point.y > virtualH.current) {
+              virtualH.current = point.y;
+            }
+          }
+        }
+      }
+    } else {
+      console.warn(
+        "trackingData tidak memiliki properti 'court_length_px' dan 'court_width_px' yang valid."
+      );
+    }
+  };
+
+  useEffect(() => {
+    // Isi koordinat pemain saat mount
+    // Transform array to Record<string, Point[]>
+    if (
+      trackingResult &&
+      "players" in trackingResult &&
+      Array.isArray(trackingResult.players)
+    ) {
+      playersCoordinates.current = trackingResult.players.reduce(
+        (
+          acc: Record<string, Point[]>,
+          curr: { player_id: number; x: number; y: number }
+        ) => {
+          const key = String(curr.player_id);
+          if (!acc[key]) acc[key] = [];
+          acc[key].push({ x: curr.x, y: curr.y });
+          return acc;
+        },
+        {}
+      );
+    } else {
+      console.warn(
+        "trackingData tidak memiliki properti 'players' yang valid."
+      );
+      playersCoordinates.current = {};
+    }
+
+    setVirtualCourtSize();
+  }, [setVirtualCourtSize, trackingResult]);
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -230,7 +305,12 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({
       </div>
       {/* Shotmap */}
       <div className="flex w-full">
-        <Shootmap playerIds={selectedPlayerID} shotData={shotResult} />
+        <Shootmap
+          playerIds={selectedPlayerID}
+          shotData={shotResult}
+          virtualCourtWidth={virtualW.current}
+          virtualCourtHeight={virtualH.current}
+        />
       </div>
 
       {/* Heatmap Header */}
@@ -242,7 +322,12 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({
       </div>
 
       {/* Heatmap */}
-      <HeatMap playerIds={selectedPlayerID} trackingData={trackingResult} />
+      <HeatMap
+        playerIds={selectedPlayerID}
+        trackingData={trackingResult}
+        virtualCourtHeight={virtualH.current}
+        virtualCourtWidth={virtualW.current}
+      />
     </div>
   );
 };
