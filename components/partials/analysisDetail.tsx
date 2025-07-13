@@ -28,6 +28,8 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
         setVideoSource(data?.video.video_result || "");
         const jsonTrackingResult = data?.video.tracking_result || "";
         const jsonShotResult = data?.video.shot_result || "";
+        console.log("Tracking Result URL:", jsonTrackingResult);
+        console.log("Shot Result URL:", jsonShotResult);
 
         try {
           const response = await fetch(jsonTrackingResult);

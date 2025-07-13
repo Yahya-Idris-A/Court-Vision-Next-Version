@@ -1,10 +1,10 @@
 "use client";
-
-import Link from "next/link";
+import React from "react";
 import { useEffect, useState } from "react";
 import { CheckCircle, XCircle } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
+import { callToaster } from "@/lib/toaster";
 
 interface AnalysisCardProps {
   thumbnail: string;
@@ -37,9 +37,18 @@ export default function AnalysisCard({
 
   const loadingText = `${uploadStatus}${".".repeat(loadingStep)}`;
 
+  function goToDetailAnalysis(url: string) {
+    if (uploadStatus != "completed") {
+      callToaster("error", "Analysis is not completed or failed.");
+      return;
+    } else {
+      window.location.href = url;
+    }
+  }
+
   return (
-    <Link
-      href={detailAnalysisUrl}
+    <div
+      onClick={() => goToDetailAnalysis(detailAnalysisUrl)}
       className="flex flex-row max-sm:flex-col gap-[20px] px-[8px] py-[10px] w-full rounded-[10px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow cursor-pointer"
     >
       <div className="flex max-w-[250px] max-sm:max-w-full w-full">
@@ -144,6 +153,6 @@ export default function AnalysisCard({
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

@@ -157,7 +157,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({
     } catch (error) {
       console.error("Error initializing heatmap:", error);
     }
-  }, [playerIds, heatmapRadius]);
+  }, [playerIds, heatmapRadius, virtualCourtWidth, virtualCourtHeight]);
 
   const handleImageLoad = () => {
     setTimeout(initHeatmap, 100);

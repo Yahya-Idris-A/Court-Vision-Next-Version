@@ -27,7 +27,7 @@ const Shotmap: React.FC<ShotmapProps> = ({
     { x: number; y: number; value: string }[]
   >([]);
 
-  const initShotmap = useCallback(async (playerId: string) => {
+  const initShotmap = useCallback(async (playerId: string[]) => {
     if (!playerId || playerIds.length === 0) {
       setScaledShots([]);
     } else {
@@ -41,6 +41,7 @@ const Shotmap: React.FC<ShotmapProps> = ({
         const filteredShots = shotData.shots.filter((shot) =>
           playerId.includes(String(shot.player_id))
         );
+
         for (const shot of filteredShots) {
           if (shot.player_coords) {
             const coords = shot.player_coords;
@@ -54,6 +55,7 @@ const Shotmap: React.FC<ShotmapProps> = ({
       } else {
         console.warn("shotData tidak memiliki properti 'shots' yang valid.");
       }
+
       const formattedData = Array.from(coordinateCounts, ([key, count]) => {
         const [xStr, yStr] = key.split(",");
 
@@ -89,11 +91,11 @@ const Shotmap: React.FC<ShotmapProps> = ({
   }, []);
 
   const handleResize = useCallback(() => {
-    initShotmap(playerIds[0]);
+    initShotmap(playerIds);
   }, [initShotmap]);
 
   useEffect(() => {
-    initShotmap(playerIds[0]);
+    initShotmap(playerIds);
 
     window.addEventListener("resize", handleResize);
     return () => {
@@ -109,7 +111,7 @@ const Shotmap: React.FC<ShotmapProps> = ({
         alt="Basketball Court"
         width={0}
         height={0}
-        onLoad={() => initShotmap(playerIds[0])}
+        onLoad={() => initShotmap(playerIds)}
         className="object-cover w-full h-full"
       />
 
