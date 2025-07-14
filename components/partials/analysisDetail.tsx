@@ -1,24 +1,24 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import VideoPlayerCard from "@/components/partials/videoPlayer";
-import TeamStats from "@/components/partials/teamStats";
-import EventMap from "@/components/partials/eventMap";
+// import TeamStats from "@/components/partials/teamStats";
+// import EventMap from "@/components/partials/eventMap";
 import * as analyzeServices from "@/services/analyzeService";
 
 type AnalysisDetailProps = {
   id: string;
 };
 
-type TrackingData = Record<string, unknown>;
-type ShotData = Record<string, unknown>;
+// type TrackingData = Record<string, unknown>;
+// type ShotData = Record<string, unknown>;
 
 const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
   const [videoThumbnail, setVideoThumbnail] = useState("/thumb/thumbnail.jpg");
   const [videoSource, setVideoSource] = useState("");
-  const [trackingResult, setTrackingResult] = useState<TrackingData | null>(
-    null
-  );
-  const [shotResult, setShotResult] = useState<ShotData | null>(null);
+  // const [trackingResult, setTrackingResult] = useState<TrackingData | null>(
+  //   null
+  // );
+  // const [shotResult, setShotResult] = useState<ShotData | null>(null);
 
   useEffect(() => {
     const getAnalysisData = async () => {
