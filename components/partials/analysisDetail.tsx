@@ -26,33 +26,32 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
         const data = await analyzeServices.getVideoDetail(id);
         setVideoThumbnail(data?.video.thumbnail_url || "");
         setVideoSource(data?.video.video_result || "");
-        const jsonTrackingResult = data?.video.tracking_result || "";
-        const jsonShotResult = data?.video.shot_result || "";
-        console.log("Tracking Result URL:", jsonTrackingResult);
-        console.log("Shot Result URL:", jsonShotResult);
+        // const jsonTrackingResult = data?.video.tracking_result || "";
+        // const jsonShotResult = data?.video.shot_result || "";
+        console.log("data: ", data);
 
-        try {
-          const response = await fetch(jsonTrackingResult);
-          if (!response.ok) {
-            throw new Error(`Gagal mengambil data: ${response.status}`);
-          }
-          const jsonText = await response.text();
-          const data: TrackingData = JSON.parse(jsonText);
-          setTrackingResult(data);
-        } catch (error) {
-          console.error(error);
-        }
-        try {
-          const response = await fetch(jsonShotResult);
-          if (!response.ok) {
-            throw new Error(`Gagal mengambil data: ${response.status}`);
-          }
-          const jsonText = await response.text();
-          const data: ShotData = JSON.parse(jsonText);
-          setShotResult(data);
-        } catch (error) {
-          console.error("Gagal mengambil data shot result:", error);
-        }
+        // try {
+        //   const response = await fetch(jsonTrackingResult);
+        //   if (!response.ok) {
+        //     throw new Error(`Gagal mengambil data: ${response.status}`);
+        //   }
+        //   const jsonText = await response.text();
+        //   const data: TrackingData = JSON.parse(jsonText);
+        //   setTrackingResult(data);
+        // } catch (error) {
+        //   console.error(error);
+        // }
+        // try {
+        //   const response = await fetch(jsonShotResult);
+        //   if (!response.ok) {
+        //     throw new Error(`Gagal mengambil data: ${response.status}`);
+        //   }
+        //   const jsonText = await response.text();
+        //   const data: ShotData = JSON.parse(jsonText);
+        //   setShotResult(data);
+        // } catch (error) {
+        //   console.error("Gagal mengambil data shot result:", error);
+        // }
       } catch (error) {
         console.error("Gagal mengambil data analisis:", error);
       }
@@ -72,11 +71,11 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
         <VideoPlayerCard thumbnail={videoThumbnail} videoSrc={videoSource} />
       )}
       {/* Stats */}
-      {shotResult && <TeamStats shotResult={shotResult} />}
+      {/* {shotResult && <TeamStats shotResult={shotResult} />} */}
       {/* Event Map */}
-      {trackingResult && shotResult && (
+      {/* {trackingResult && shotResult && (
         <EventMap trackingResult={trackingResult} shotResult={shotResult} />
-      )}
+      )} */}
     </div>
   );
 };

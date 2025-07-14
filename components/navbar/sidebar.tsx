@@ -17,7 +17,6 @@ export default function Sidebar() {
   const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
   const toggleSidebar = () => {
     setIsSidebarExpanded((prev) => !prev);
-    console.log("Sidebar toggled:", !isSidebarExpanded);
   };
   const pathname = usePathname();
 

@@ -38,11 +38,14 @@ export default function AnalysisCard({
   const loadingText = `${uploadStatus}${".".repeat(loadingStep)}`;
 
   function goToDetailAnalysis(url: string) {
-    if (uploadStatus != "completed") {
-      callToaster("error", "Analysis is not completed or failed.");
+    if (uploadStatus === "completed") {
+      window.location.href = url;
+    } else if (uploadStatus === "failed") {
+      callToaster("error", "Analysis is failed.");
       return;
     } else {
-      window.location.href = url;
+      callToaster("error", "Analysis is not completed yet.");
+      return;
     }
   }
 
@@ -55,6 +58,7 @@ export default function AnalysisCard({
         <Image
           src={thumbnail}
           alt={thumbnail}
+          key={thumbnail}
           width={250}
           height={120}
           priority

@@ -58,6 +58,10 @@ const Page = () => {
     setVideos(formattedData);
     setIsLoading(false);
   };
+  const getVideosThumbById = async (id: string) => {
+    const rawData = await analyzeService.getVideoDetail(id);
+    return rawData.video.thumbnail_url;
+  };
 
   useEffect(() => {
     getAllVideos();
@@ -78,6 +82,7 @@ const Page = () => {
         },
       }
     );
+    console.log("start");
 
     eventSource.onmessage = (event: MessageEvent) => {
       if (event.data) {
@@ -92,8 +97,21 @@ const Page = () => {
               }
             : video
         );
-
         setVideos(updatedVideos);
+        console.log("event data: ", data);
+        if (data.video.status === "completed") {
+          getVideosThumbById(data.video.id).then((newThumb) => {
+            const updatedVideos = videosRef.current.map((video) =>
+              video.id === data.video.id
+                ? {
+                    ...video,
+                    thumbnail_url: newThumb,
+                  }
+                : video
+            );
+            setVideos(updatedVideos);
+          });
+        }
       }
     };
 
