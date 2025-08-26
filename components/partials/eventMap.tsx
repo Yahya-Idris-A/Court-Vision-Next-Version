@@ -4,11 +4,28 @@ import { LocateFixed } from "lucide-react";
 import Shootmap from "./shootMap";
 import HeatMap from "./heatMap";
 
-type TrackingData = Record<string, unknown>;
-type ShotData = Record<string, unknown>;
+interface TrackingEntry {
+  frame: number;
+  player_id: number;
+  team_id: number;
+  x: number;
+  y: number;
+}
+
+interface ShotEntry {
+  ball_coords: { x: number; y: number };
+  frame: number;
+  player_coords: { x: number; y: number };
+  player_id: number;
+  result: string;
+  team_id: number;
+}
+
 interface TrackingDataProps {
-  trackingResult: TrackingData;
-  shotResult: ShotData;
+  trackingResult: TrackingEntry[];
+  shotResult: ShotEntry[];
+  courtLength: number;
+  courtWidth: number;
 }
 
 // Tipe untuk konfigurasi pemain yang akan digunakan di UI
@@ -25,13 +42,9 @@ interface Point {
 const TeamEventCard: React.FC<TrackingDataProps> = ({
   trackingResult,
   shotResult,
+  courtLength,
+  courtWidth,
 }) => {
-  const playersData = useRef<Record<string, unknown>>({});
-  useEffect(() => {
-    // Ambil data pemain dari file JSON
-    playersData.current = trackingResult;
-  }, [trackingResult]);
-
   const [selectedTeam, setSelectedTeam] = useState<"A" | "B">("A");
   const [teamAPlayerConfig, setTeamAPlayerConfig] = useState<PlayerConfig[]>(
     []
@@ -53,53 +66,55 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({
     const loadAndProcessData = async () => {
       setIsLoading(true);
       setError(null);
-      try {
-        const data = playersData.current.players;
+      if (trackingResult.length > 0) {
+        try {
+          const data = trackingResult;
 
-        const uniqueTeamAPlayerIds = new Set<number>();
-        const uniqueTeamBPlayerIds = new Set<number>();
+          const uniqueTeamAPlayerIds = new Set<number>();
+          const uniqueTeamBPlayerIds = new Set<number>();
 
-        if (Array.isArray(data)) {
-          for (const entry of data) {
-            // Asumsi: team_id 0 adalah Tim A, team_id 1 adalah Tim B
-            if (entry.team_id === 0) {
-              uniqueTeamAPlayerIds.add(entry.player_id);
-            } else if (entry.team_id === 1) {
-              uniqueTeamBPlayerIds.add(entry.player_id);
+          if (Array.isArray(data)) {
+            for (const entry of data) {
+              // Asumsi: team_id 0 adalah Tim A, team_id 1 adalah Tim B
+              if (entry.team_id === 0) {
+                uniqueTeamAPlayerIds.add(entry.player_id);
+              } else if (entry.team_id === 1) {
+                uniqueTeamBPlayerIds.add(entry.player_id);
+              }
             }
+          } else {
+            throw new Error("Data pemain tidak valid atau bukan array.");
           }
-        } else {
-          throw new Error("Data pemain tidak valid atau bukan array.");
+
+          const finalTeamAConfig: PlayerConfig[] = Array.from(
+            uniqueTeamAPlayerIds
+          )
+            .sort((a, b) => a - b) // Urutkan berdasarkan ID numerik
+            .map((pid) => ({ id: String(pid), name: `Player ${pid}` }));
+
+          const finalTeamBConfig: PlayerConfig[] = Array.from(
+            uniqueTeamBPlayerIds
+          )
+            .sort((a, b) => a - b) // Urutkan berdasarkan ID numerik
+            .map((pid) => ({ id: String(pid), name: `Player ${pid}` }));
+
+          setTeamAPlayerConfig(finalTeamAConfig);
+          setTeamBPlayerConfig(finalTeamBConfig);
+        } catch (err) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Gagal memuat atau memproses data frame"
+          );
+          console.error(err);
+        } finally {
+          setIsLoading(false);
         }
-
-        const finalTeamAConfig: PlayerConfig[] = Array.from(
-          uniqueTeamAPlayerIds
-        )
-          .sort((a, b) => a - b) // Urutkan berdasarkan ID numerik
-          .map((pid) => ({ id: String(pid), name: `Player ${pid}` }));
-
-        const finalTeamBConfig: PlayerConfig[] = Array.from(
-          uniqueTeamBPlayerIds
-        )
-          .sort((a, b) => a - b) // Urutkan berdasarkan ID numerik
-          .map((pid) => ({ id: String(pid), name: `Player ${pid}` }));
-
-        setTeamAPlayerConfig(finalTeamAConfig);
-        setTeamBPlayerConfig(finalTeamBConfig);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Gagal memuat atau memproses data frame"
-        );
-        console.error(err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     loadAndProcessData();
-  }, []); // Jalankan sekali saat mount
+  }, [trackingResult]);
 
   // useEffect untuk mengatur pemain terpilih default SETELAH konfigurasi tim dimuat
   useEffect(() => {
@@ -144,66 +159,38 @@ const TeamEventCard: React.FC<TrackingDataProps> = ({
   const playersCoordinates = useRef<Record<string, Point[]>>({});
 
   const setVirtualCourtSize = () => {
-    if (
-      trackingResult &&
-      typeof trackingResult === "object" &&
-      "court_length_px" in trackingResult &&
-      "court_width_px" in trackingResult
-    ) {
-      const courtLengthPx = (trackingResult as { court_length_px: number })
-        .court_length_px;
-      const courtWidthPx = (trackingResult as { court_width_px: number })
-        .court_width_px;
-      if (courtLengthPx > 0 && courtWidthPx > 0) {
-        virtualW.current = courtLengthPx;
-        virtualH.current = courtWidthPx;
-      } else {
-        for (const playerFrames of Object.values(playersCoordinates.current)) {
-          // Object.values(playerFrames) akan mengambil semua data koordinat -> [ {x, y}, {x, y}, ... ]
-          for (const point of Object.values(playerFrames)) {
-            // Bandingkan dan perbarui nilai maksimum x dan y
-            if (point.x > virtualW.current) {
-              virtualW.current = point.x;
-            }
-            if (point.y > virtualH.current) {
-              virtualH.current = point.y;
-            }
+    if (courtLength === 0 || courtWidth === 0) {
+      for (const playerFrames of Object.values(playersCoordinates.current)) {
+        // Object.values(playerFrames) akan mengambil semua data koordinat -> [ {x, y}, {x, y}, ... ]
+        for (const point of Object.values(playerFrames)) {
+          // Bandingkan dan perbarui nilai maksimum x dan y
+          if (point.x > virtualW.current) {
+            virtualW.current = point.x;
+          }
+          if (point.y > virtualH.current) {
+            virtualH.current = point.y;
           }
         }
       }
     } else {
-      console.warn(
-        "trackingData tidak memiliki properti 'court_length_px' dan 'court_width_px' yang valid."
-      );
+      virtualW.current = courtLength;
+      virtualH.current = courtWidth;
     }
   };
 
   useEffect(() => {
-    // Isi koordinat pemain saat mount
-    // Transform array to Record<string, Point[]>
-    if (
-      trackingResult &&
-      "players" in trackingResult &&
-      Array.isArray(trackingResult.players)
-    ) {
-      playersCoordinates.current = trackingResult.players.reduce(
-        (
-          acc: Record<string, Point[]>,
-          curr: { player_id: number; x: number; y: number }
-        ) => {
-          const key = String(curr.player_id);
-          if (!acc[key]) acc[key] = [];
-          acc[key].push({ x: curr.x, y: curr.y });
-          return acc;
-        },
-        {}
-      );
-    } else {
-      console.warn(
-        "trackingData tidak memiliki properti 'players' yang valid."
-      );
-      playersCoordinates.current = {};
-    }
+    playersCoordinates.current = trackingResult.reduce(
+      (
+        acc: Record<string, Point[]>,
+        curr: { player_id: number; x: number; y: number }
+      ) => {
+        const key = String(curr.player_id);
+        if (!acc[key]) acc[key] = [];
+        acc[key].push({ x: curr.x, y: curr.y });
+        return acc;
+      },
+      {}
+    );
 
     setVirtualCourtSize();
   }, [setVirtualCourtSize, trackingResult]);

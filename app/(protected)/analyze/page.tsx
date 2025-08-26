@@ -7,6 +7,8 @@ import Pagination from "@/components/partials/pagination";
 import Link from "next/link";
 import * as analyzeService from "@/services/analyzeService";
 import dynamic from "next/dynamic";
+import { callToaster } from "@/lib/toaster";
+import { video } from "framer-motion/client";
 
 const ListVideoCards = dynamic(
   () => import("@/components/cards/listVideoCards"),
@@ -36,6 +38,7 @@ const Page = () => {
   const videosRef = useRef(videos);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   const totalItems = videos.length;
   const currentData = videos.slice(
@@ -58,10 +61,6 @@ const Page = () => {
     setVideos(formattedData);
     setIsLoading(false);
   };
-  const getVideosThumbById = async (id: string) => {
-    const rawData = await analyzeService.getVideoDetail(id);
-    return rawData.video.thumbnail_url;
-  };
 
   useEffect(() => {
     getAllVideos();
@@ -71,57 +70,86 @@ const Page = () => {
     videosRef.current = videos;
   }, [videos]);
 
+  const getVideosThumbById = async (id: string) => {
+    const rawData = await analyzeService.getVideoDetail(id);
+    return rawData.video.thumbnail_url;
+  };
+
   useEffect(() => {
-    const token = analyzeService.getToken();
-
-    const eventSource = new ExtendedEventSource.EventSource(
-      analyzeService.endPointUploadProgress,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    const needsToListen = videos.some(
+      (video) =>
+        video.uploadStatus === "waiting" || video.uploadStatus === "processing"
     );
-    console.log("start");
+    if (needsToListen && !eventSourceRef.current) {
+      const token = analyzeService.getToken();
 
-    eventSource.onmessage = (event: MessageEvent) => {
-      if (event.data) {
-        const data = JSON.parse(event?.data);
+      const eventSource = new ExtendedEventSource.EventSource(
+        analyzeService.endPointUploadProgress,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-        const updatedVideos = videosRef.current.map((video) =>
-          video.id === data.video.id
-            ? {
+      eventSource.onmessage = (event: MessageEvent) => {
+        if (event.data) {
+          const data = JSON.parse(event?.data);
+
+          const updatedVideos = videosRef.current.map((video) =>
+            video.id === data.video.id
+              ? {
                 ...video,
                 uploadProgress: data.video.progress,
                 uploadStatus: data.video.status,
               }
-            : video
-        );
-        setVideos(updatedVideos);
-        console.log("event data: ", data);
-        if (data.video.status === "completed") {
-          getVideosThumbById(data.video.id).then((newThumb) => {
-            const updatedVideos = videosRef.current.map((video) =>
-              video.id === data.video.id
-                ? {
+              : video
+          );
+          setVideos(updatedVideos);
+          console.log("event data: ", data);
+          if (data.video.status === "completed") {
+            getVideosThumbById(data.video.id).then((newThumb) => {
+              const updatedVideos = videosRef.current.map((video) =>
+                video.id === data.video.id
+                  ? {
                     ...video,
                     thumbnail_url: newThumb,
                   }
-                : video
-            );
-            setVideos(updatedVideos);
-          });
+                  : video
+              );
+              setVideos(updatedVideos);
+            });
+          }
         }
-      }
-    };
+      };
 
-    eventSource.onerror = (error) => {
-      console.error("Error occurred:", error);
-    };
-  }, []);
+      eventSource.onerror = (error) => {
+        console.error("Error occurred:", error);
+      };
+      eventSourceRef.current = eventSource;
+
+      return () => {
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+          eventSourceRef.current = null; // Reset ref
+        }
+      };
+    }
+  }, [videos]);
+
+  const handleUpdate = (videoId: string) => {
+    try {
+      setVideos((prevVideos) =>
+        prevVideos.filter((video) => video.id !== videoId)
+      );
+      callToaster("success", "Video deleted successfully");
+    } catch (error) {
+      console.error("Failed to update videos:", error);
+    }
+  };
 
   return (
-    <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] pr-[20px] max-sm:mt-[16px]">
+    <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] pr-[10px] max-sm:mt-[16px]">
       {/* Header */}
       <div className="flex flex-row items-center justify-start w-full p-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
         <p className="text-[18px] text-[var(--MainText)] font-semibold">
@@ -134,6 +162,7 @@ const Page = () => {
           {currentData.map((item, index) => (
             <ListVideoCards
               key={index}
+              id={item.id}
               thumbnail={item.thumbnail_url}
               title={item.title}
               date={item.date}
@@ -141,6 +170,7 @@ const Page = () => {
               uploadProgress={item.uploadProgress}
               uploadStatus={item.uploadStatus}
               detailAnalysisUrl={item.detailAnalysisUrl}
+              onUpdate={handleUpdate}
             />
           ))}
         </div>

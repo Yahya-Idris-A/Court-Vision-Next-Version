@@ -6,7 +6,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { id } = req.query;
-  const url = `${process.env.SECRET_API_BASE_URL}/api/videos/${id}`;
+  const url = `${process.env.SECRET_API_BASE_URL}/api/videos/${id}/result`;
 
   try {
     const response = await axios({
@@ -22,6 +22,5 @@ export default async function handler(
     console.log("response data: ", response.data);
   } catch (error) {
     console.log(error);
-    console.log("error");
   }
 }

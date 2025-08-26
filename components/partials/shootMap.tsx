@@ -5,11 +5,18 @@ import Image from "next/image";
 const COURT_WIDTH = 28; // FIBA: 28m, NBA: 94ft
 const COURT_HEIGHT = 15; // FIBA: 15m, NBA: 50ft
 
-type ShotData = Record<string, unknown>;
+interface ShotEntry {
+  ball_coords: { x: number; y: number };
+  frame: number;
+  player_coords: { x: number; y: number };
+  player_id: number;
+  result: string;
+  team_id: number;
+}
 
 type ShotmapProps = {
   playerIds: string[];
-  shotData: ShotData;
+  shotData: ShotEntry[];
   virtualCourtWidth?: number;
   virtualCourtHeight?: number;
 };
@@ -37,8 +44,9 @@ const Shotmap: React.FC<ShotmapProps> = ({
 
       const scaleXForPlayer = COURT_WIDTH / virtualWidth;
       const scaleYForPlayer = COURT_HEIGHT / virtualHeight;
-      if (shotData && "shots" in shotData && Array.isArray(shotData.shots)) {
-        const filteredShots = shotData.shots.filter((shot) =>
+
+      if (shotData) {
+        const filteredShots = shotData.filter((shot) =>
           playerId.includes(String(shot.player_id))
         );
 
@@ -101,7 +109,7 @@ const Shotmap: React.FC<ShotmapProps> = ({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [initShotmap, handleResize, playerIds]);
+  }, [initShotmap, handleResize, playerIds, shotData]);
 
   return (
     <div ref={courtRef} className="relative w-full">
@@ -112,6 +120,7 @@ const Shotmap: React.FC<ShotmapProps> = ({
         width={0}
         height={0}
         onLoad={() => initShotmap(playerIds)}
+        priority
         className="object-cover w-full h-full"
       />
 

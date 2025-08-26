@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-// Tipe untuk breakpoint yang kita definisikan
+// Tipe untuk breakpoint yang didefinisikan
 export type Breakpoint = "sm" | "md" | "lg";
 
 const getBreakpoint = (width: number): Breakpoint => {
@@ -31,7 +31,7 @@ export const useBreakpoint = (): Breakpoint => {
     window.addEventListener("resize", handleResize);
 
     // Fungsi cleanup: hapus event listener saat komponen di-unmount
-    // Ini penting untuk mencegah memory leak
+    // Untuk mencegah memory leak
     return () => {
       window.removeEventListener("resize", handleResize);
     };

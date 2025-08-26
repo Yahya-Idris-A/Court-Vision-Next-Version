@@ -7,12 +7,7 @@ export const setHeaders = () => {
   }`;
 };
 
-export const getToken = () => {
-  return localStorage.getItem("token")?.replace(/['"]+/g, "") || "";
-};
 
-export const endPointUploadProgress =
-  process.env.NEXT_PUBLIC_API_URL + "/api/videos/progress";
 
 interface RawVideoData {
   id: string;
@@ -60,6 +55,14 @@ export async function getAllVideoProgress() {
   }
 }
 
+
+export const getToken = () => {
+  return localStorage.getItem("token")?.replace(/['"]+/g, "") || "";
+};
+
+export const endPointUploadProgress =
+  process.env.NEXT_PUBLIC_API_URL + "/api/videos/progress";
+
 // Retrieves the details of an existing video by its ID.
 export async function getVideoDetail(Id: string) {
   const id = encodeURIComponent(Id);
@@ -72,6 +75,42 @@ export async function getVideoDetail(Id: string) {
   try {
     const res = await axiosAnalyze.get(`/api/videos/${id}`);
     return res.data;
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    return null;
+  }
+}
+
+// Retrieves the analysis result of an existing video by its ID.
+export async function getVideoAnalysisResult(Id: string) {
+  const id = encodeURIComponent(Id);
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  if (!token) return null;
+
+  axiosAnalyze.defaults.headers.common["Content-Type"] = "application/json";
+  axiosAnalyze.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  try {
+    const res = await axiosAnalyze.get(`/api/videos/${id}/result`);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    return null;
+  }
+}
+
+// Delete video by id
+export async function deleteVideo(Id: string) {
+  const id = encodeURIComponent(Id);
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  if (!token) return null;
+
+  axiosAnalyze.defaults.headers.common["Content-Type"] = "application/json";
+  axiosAnalyze.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  try {
+    const res = await axiosAnalyze.delete(`/api/videos/${id}`);
+    return res;
   } catch (err) {
     console.error("Error fetching data:", err);
     return null;

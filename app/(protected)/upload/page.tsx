@@ -96,6 +96,7 @@ const Page = () => {
 
     // Logic upload makai AWS S3
     uppyInstance.use(AwsS3, {
+      shouldUseMultipart: false,
       async getUploadParameters(file, options) {
         const result = await uploadService.getSignedUrl(
           file.name ?? "",
@@ -111,83 +112,6 @@ const Page = () => {
             "Content-Type": file.type,
           },
         };
-      },
-
-      async createMultipartUpload(file) {
-        const metadata: Record<string, string> = {};
-        Object.keys(file.meta || {}).forEach((key) => {
-          if (file.meta[key] != null) {
-            metadata[key] = file.meta[key].toString();
-          }
-        });
-        try {
-          return await uploadService.createMultipartUpload(
-            file.name ?? "",
-            file.type,
-            metadata
-          );
-        } catch (error) {
-          console.error("Error creating multipart upload:", error);
-          throw new Error("Failed to create multipart upload");
-        }
-      },
-      async signPart(_file, options) {
-        const { uploadId, key, partNumber, signal } = options;
-        signal?.throwIfAborted();
-        if (uploadId == null || key == null || partNumber == null) {
-          throw new Error(
-            "Cannot sign without a key, an uploadId, and a partNumber"
-          );
-        }
-        try {
-          return await uploadService.signPart(
-            uploadId!,
-            key,
-            partNumber,
-            signal
-          );
-        } catch (error) {
-          console.error("Error signing part:", error);
-          throw new Error("Failed to sign part");
-        }
-      },
-      async listParts(_file, options) {
-        const { uploadId, key, signal } = options;
-        signal?.throwIfAborted();
-        try {
-          return await uploadService.listParts(uploadId!, key, signal);
-        } catch (error) {
-          console.error("Error listing parts:", error);
-          throw new Error("Failed to list parts");
-        }
-      },
-      async completeMultipartUpload(_file, options) {
-        const { uploadId, key, signal, parts } = options;
-        signal?.throwIfAborted();
-        try {
-          return await uploadService.completeMultipartUpload(
-            uploadId!,
-            key,
-            parts,
-            signal
-          );
-        } catch (error) {
-          console.error("Error completing multipart upload:", error);
-          throw new Error("Failed to complete multipart upload");
-        }
-      },
-      async abortMultipartUpload(_file, options) {
-        const { uploadId, key, signal } = options;
-        try {
-          return await uploadService.abortMultipartUpload(
-            uploadId!,
-            key,
-            signal
-          );
-        } catch (error) {
-          console.error("Error aborting multipart upload:", error);
-          throw new Error("Failed to abort multipart upload");
-        }
       },
     });
 
@@ -293,7 +217,7 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] mr-[20px] max-sm:mt-[16px]">
+    <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] pr-[10px] max-sm:mt-[16px]">
       {/* Header */}
       <div className="flex flex-row items-center justify-start w-full p-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
         <p className="text-[18px] text-[var(--MainText)] font-semibold">

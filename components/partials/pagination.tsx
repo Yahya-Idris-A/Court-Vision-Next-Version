@@ -49,7 +49,7 @@ const pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="text-[#4B465C] bg-gray-200 rounded-[6px] px-[10px] py-[8px] cursor-pointer"
+        className="text-[var(--MainText)] bg-gray-200 rounded-[6px] px-[10px] py-[8px] cursor-pointer"
       >
         <ArrowLeft className="max-sm:h-[16px] max-sm:w-[16px]" />
       </button>
@@ -61,15 +61,15 @@ const pagination: React.FC<PaginationProps> = ({
             onClick={() => onPageChange(num)}
             disabled={num === currentPage}
             style={{
-              background: num === currentPage ? "#FD6A2A" : "#e5e7eb",
+              background: num === currentPage ? "#007aff" : "#e5e7eb",
             }}
-            className="w-[45px] max-sm:w-[35px] py-[8px] max-sm:py-[4px] text-[#4B465C] cursor-pointer rounded-[6px] transition-all duration-300"
+            className="w-[45px] max-sm:w-[35px] py-[8px] max-sm:py-[4px] text-[var(--MainText)] cursor-pointer rounded-[6px] transition-all duration-300"
           >
             {num}
           </button>
         ) : (
           <span
-            className="w-[45px] max-sm:w-[35px] py-[8px] max-sm:py-[4px] text-[#4B465C] rounded-[6px] transition-all duration-300 bg-[#e5e7eb] text-center"
+            className="w-[45px] max-sm:w-[35px] py-[8px] max-sm:py-[4px] text-[var(--MainText)] rounded-[6px] transition-all duration-300 bg-[#e5e7eb] text-center"
             key={idx}
           >
             ...
@@ -80,7 +80,7 @@ const pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="text-[#4B465C] bg-gray-200 rounded-[6px] px-[10px] py-[8px] cursor-pointer"
+        className="text-[var(--MainText)] bg-gray-200 rounded-[6px] px-[10px] py-[8px] cursor-pointer"
       >
         <ArrowRight className="max-sm:h-[16px] max-sm:w-[16px]" />
       </button>

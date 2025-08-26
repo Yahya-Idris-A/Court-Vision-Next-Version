@@ -3,11 +3,17 @@ import Image from "next/image";
 import { useCallback } from "react";
 import { useBreakpoint } from "@/lib/useBreakpoints";
 
-type TrackingData = Record<string, unknown>;
+interface TrackingEntry {
+  frame: number;
+  player_id: number;
+  team_id: number;
+  x: number;
+  y: number;
+}
 
 type HeatMapProps = {
   playerIds: string[];
-  trackingData: TrackingData;
+  trackingData: TrackingEntry[];
   virtualCourtWidth?: number;
   virtualCourtHeight?: number;
 };
@@ -129,6 +135,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({
 
     try {
       const imageRect = image.getBoundingClientRect();
+
       scaleXRef.current = imageRect.width / COURT_WIDTH;
       scaleYRef.current = imageRect.height / COURT_HEIGHT;
 
@@ -157,7 +164,14 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({
     } catch (error) {
       console.error("Error initializing heatmap:", error);
     }
-  }, [playerIds, heatmapRadius, virtualCourtWidth, virtualCourtHeight]);
+  }, [
+    playerIds,
+    heatmapRadius,
+    virtualCourtWidth,
+    virtualCourtHeight,
+    courtContainerRef,
+    courtImageRef,
+  ]);
 
   const handleImageLoad = () => {
     setTimeout(initHeatmap, 100);
@@ -193,12 +207,8 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({
   useEffect(() => {
     // Isi koordinat pemain saat mount
     // Transform array to Record<string, Point[]>
-    if (
-      trackingData &&
-      "players" in trackingData &&
-      Array.isArray(trackingData.players)
-    ) {
-      playersCoordinates.current = trackingData.players.reduce(
+    if (trackingData) {
+      playersCoordinates.current = trackingData.reduce(
         (
           acc: Record<string, Point[]>,
           curr: { player_id: number; x: number; y: number }
@@ -210,11 +220,6 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({
         },
         {}
       );
-    } else {
-      console.warn(
-        "trackingData tidak memiliki properti 'players' yang valid."
-      );
-      playersCoordinates.current = {};
     }
   }, [trackingData]);
 
@@ -227,6 +232,7 @@ const CourtHeatmp: React.FC<HeatMapProps> = ({
         height={0}
         ref={courtImageRef}
         onLoad={handleImageLoad}
+        priority
         className="object-cover w-full h-full"
       />
     </div>

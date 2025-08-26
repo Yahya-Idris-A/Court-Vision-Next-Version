@@ -1,9 +1,16 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 
-type ShotData = Record<string, unknown>;
+interface ShotEntry {
+  ball_coords: { x: number; y: number };
+  frame: number;
+  player_coords: { x: number; y: number };
+  player_id: number;
+  result: string;
+  team_id: number;
+}
 interface MatchStatsCardProps {
-  shotResult: ShotData;
+  shotResult: ShotEntry[];
 }
 
 const getPercentage = (home: number, away: number) => {
@@ -75,17 +82,13 @@ const MatchStatsCard: React.FC<MatchStatsCardProps> = ({ shotResult }) => {
   });
 
   const initShotCount = useCallback(() => {
-    if (
-      shotResult &&
-      "shots" in shotResult &&
-      Array.isArray(shotResult.shots)
-    ) {
+    if (shotResult) {
       // 1. Buat variabel lokal untuk menghitung
       let homeCount = 0;
       let awayCount = 0;
 
       // 2. Lakukan perulangan dan update variabel lokal
-      for (const shot of shotResult.shots) {
+      for (const shot of shotResult) {
         if (shot.team_id === 0) {
           homeCount += 1;
         } else {
