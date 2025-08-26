@@ -63,6 +63,7 @@ export default function AnalysisCard({
       onUpdate(id); // Call the update function to refresh the video list
     } catch (error) {
       callToaster("error", "Failed to delete video");
+      console.error("Failed to delete video:", error);
     }
     setIsModalOpen(false);
   };

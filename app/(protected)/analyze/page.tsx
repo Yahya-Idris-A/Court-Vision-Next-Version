@@ -8,7 +8,6 @@ import Link from "next/link";
 import * as analyzeService from "@/services/analyzeService";
 import dynamic from "next/dynamic";
 import { callToaster } from "@/lib/toaster";
-import { video } from "framer-motion/client";
 
 const ListVideoCards = dynamic(
   () => import("@/components/cards/listVideoCards"),
