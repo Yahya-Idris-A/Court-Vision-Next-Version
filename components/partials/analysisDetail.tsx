@@ -59,7 +59,7 @@ const AnalysisDetail: React.FC<AnalysisDetailProps> = ({ id }) => {
   //   console.log("shot result: ", shotResult);
   // }, [videoThumbnail, videoSource, trackingResult, shotResult]);
   return (
-    <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] max-sm:mt-[16px]">
+    <div className="flex flex-col items-center gap-[10px] w-full mt-[32px] pr-[10px] max-sm:mt-[16px]">
       {/* Header */}
       <div className="flex flex-row items-center justify-start w-full p-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
         <p className="text-[18px] text-[var(--MainText)] font-semibold">

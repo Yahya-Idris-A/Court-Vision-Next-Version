@@ -38,7 +38,7 @@ const ThumbnailPlaceholder: React.FC<ThumbnailPlaceholderProps> = ({
   return (
     // Kontainer utama placeholder
     // Menggunakan kelas yang sama dengan Image Anda untuk ukuran yang konsisten
-    <div className="flex items-center justify-center w-[250px] max-sm:w-full h-[120px] max-sm:h-full bg-gray-200 rounded-md">
+    <div className="flex items-center justify-center w-[250px] max-sm:w-full h-[120px] max-sm:h-[120px] bg-gray-200 rounded-md">
       {content}
     </div>
   );
