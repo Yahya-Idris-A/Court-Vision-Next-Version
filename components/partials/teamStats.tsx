@@ -118,17 +118,17 @@ const MatchStatsCard: React.FC<MatchStatsCardProps> = ({ shotResult }) => {
   return (
     <div className="flex flex-col items-center justify-start w-full p-[20px] gap-[20px] bg-[var(--CardBackground)] border border-[var(--Border)] shadow">
       {/* Team Logos and VS */}
-      <div className="flex flex-row gap-[50px] justify-center items-center">
+      <div className="flex flex-row gap-[50px] max-xl:gap-[35px] max-sm:gap-[20px] justify-center items-center">
         <div className="flex flex-row items-center justify-end">
-          <p className="text-[30px] max-sm:text-[24px] text-[var(--MainText)] font-semibold">
+          <p className="text-[30px] max-sm:text-[20px] text-[var(--MainText)] font-semibold">
             Team A
           </p>
         </div>
-        <h1 className="text-[36px] max-sm:text-[24px] text-[var(--MainText)] font-semibold">
+        <h1 className="text-[36px] max-sm:text-[20px] text-[var(--MainText)] font-semibold">
           VS
         </h1>
         <div className="flex flex-row items-center justify-start">
-          <p className="text-[30px] text-[var(--MainText)] font-semibold">
+          <p className="text-[30px] max-sm:text-[20px] text-[var(--MainText)] font-semibold">
             Team B
           </p>
         </div>
