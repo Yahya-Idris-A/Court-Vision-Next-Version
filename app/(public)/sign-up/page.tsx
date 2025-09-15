@@ -34,25 +34,30 @@ const SignUp: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    if (userData.password !== confirmPassword) {
-      callToaster("error", "Password oes not match");
-      setIsLoading(false);
-      return;
-    } else {
-      try {
-        const response = await authService.signup(userData);
-        console.log("Sign Up Success:", response);
-
-        localStorage.setItem("token", response.data.token);
-        console.log("Token:", response.data.token);
-        callToaster("success", "Create Account Success");
-        window.location.href = "/user";
-      } catch (error) {
-        console.error("Sign Up failed:", error);
-        callToaster("error", "Create Account Failed");
-      } finally {
+    if (userData.name && userData.email && userData.password && confirmPassword) {
+      if (userData.password !== confirmPassword) {
+        callToaster("error", "Password does not match");
         setIsLoading(false);
+        return;
+      } else {
+        try {
+          const response = await authService.signup(userData);
+          console.log("Sign Up Success:", response);
+
+          localStorage.setItem("token", response.data.token);
+          console.log("Token:", response.data.token);
+          callToaster("success", "Create Account Success");
+          window.location.href = "/user";
+        } catch (error) {
+          console.error("Sign Up failed:", error);
+          callToaster("error", "Create Account Failed");
+        } finally {
+          setIsLoading(false);
+        }
       }
+    } else {
+      callToaster("default", "All fields must fill");
+      setIsLoading(false);
     }
   };
 
